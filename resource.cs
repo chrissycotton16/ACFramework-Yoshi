@@ -326,23 +326,14 @@ namespace ACFramework
         // add more models here that you need in numerical order
         // then add to the array below in the same order
 
-        public static readonly int Terminator = 0;
-        public static readonly int Bravo = 1;
-        public static readonly int Crafty = 2;
-        public static readonly int Megatron = 3;
-        public static readonly int Starwars_bdroid = 4;
-        public static readonly int Speedy = 5;
-        public static readonly int Ostrich = 6;
-
+        public static readonly int Yoshi = 0;
+        public static readonly int Chicken = 1;
+ 
         // at least one must be set true
         private static readonly ModelsMD2Info[] minfo = {
-            new ModelsMD2Info( "Terminator", "chaos.pcx", 0.1f, true ),
-            new ModelsMD2Info( "Bravo", "bravo.pcx", 0.1f, true ),
-            new ModelsMD2Info( "Crafty", "Electra.pcx", 0.2f, true ),
-            new ModelsMD2Info( "Megatron", "megatron.pcx", 0.1f, true ),
-            new ModelsMD2Info( "Starwars_bdroid", "security.pcx", 0.2f, true ),
-            new ModelsMD2Info( "Speedy", "speedy.pcx", 0.2f, true ),
-            new ModelsMD2Info( "Ostrich", "ctf_r.pcx", 0.2f, true )
+            new ModelsMD2Info( "Yoshi", "blue yoshi.pcx", 0.1f, false ),
+            new ModelsMD2Info( "Chicken", "Psycho.pcx", 0.1f, true ),
+
         };            
 
         private static int[] randomCritters;
