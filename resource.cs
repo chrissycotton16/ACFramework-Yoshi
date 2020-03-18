@@ -328,8 +328,7 @@ namespace ACFramework
 
         public static readonly int Yoshi = 0;
         public static readonly int Chicken = 1;
-      
-
+ 
         // at least one must be set true
         private static readonly ModelsMD2Info[] minfo = {
             new ModelsMD2Info( "Yoshi", "blue yoshi.pcx", 0.1f, false ),
