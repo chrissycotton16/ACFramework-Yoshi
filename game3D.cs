@@ -330,7 +330,7 @@ namespace ACFramework
 			SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Sky ); //ceiling 
 		
 			WrapFlag = cCritter.BOUNCE; 
-			_seedcount = 7; 
+			_seedcount = 13; 
 			setPlayer( new cCritter3DPlayer( this )); 
 			_ptreasure = new cCritterTreasure( this );
             shape = new cCritterShape(this);
@@ -360,16 +360,16 @@ namespace ACFramework
 		
 		
 			//Then draw a ramp to the top of the wall.  Scoot it over against the right wall.
-			float planckwidth = 0.75f * height; 
+			float planckwidth = 8.0f * height; 
 			pwall = new cCritterWall( 
 				new cVector3( _border.Hix -planckwidth / 2.0f, _border.Loy, _border.Hiz - 2.0f), 
 				new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
 				planckwidth+2.0f, //thickness param for wall's dy which is perpenedicualr to the baseline, 
 						//which goes into the screen, so thickness goes to the right 
-				wallthickness, //_border.zradius(),  //height argument for wall's dz which goes into the screen 
+				wallthickness+0.25f, //_border.zradius(),  //height argument for wall's dz which goes into the screen 
 				this );
             cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
-                BitmapRes.Wood2, 2 );
+                BitmapRes.Wall3, 2 );
             pwall.Sprite = stb;
 		
 			cCritterDoor pdwall = new cCritterDoor( 
@@ -417,7 +417,19 @@ namespace ACFramework
             pwall.Sprite = pspritebox;
             wentThrough = true;
             startNewRoom = Age;
-        }
+			
+			
+			//MADE DOOR HERE put in room one
+			//------------------------------------------------------------------------------------------------
+			cCritterDoor pdwall = new cCritterDoor( 
+				new cVector3( _border.Lox, _border.Loy, _border.Midz ), 
+				new cVector3( _border.Lox, _border.Midy - 3, _border.Midz ), 
+				0.1f, 2, this ); 
+			cSpriteTextureBox pspritedoor = 
+				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
+			pdwall.Sprite = pspritedoor;
+			//---------------------------------------------------------------------------------------------------
+		}
 		
 		public override void seedCritters() 
 		{
@@ -493,7 +505,7 @@ namespace ACFramework
 
             if (wentThrough && (Age - startNewRoom) > 2.0f)
             {
-                MessageBox.Show("What an idiot.");
+               
                 wentThrough = false;
             }
 
