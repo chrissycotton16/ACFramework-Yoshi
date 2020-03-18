@@ -44,8 +44,9 @@ namespace ACFramework
         public cCritter3DPlayer( cGame pownergame ) 
             : base( pownergame ) 
 		{ 
-			BulletClass = new cCritter3DPlayerBullet( ); 
-            Sprite = new cSphere( 1.0f, Color.DarkGreen ); 
+			BulletClass = new cCritter3DPlayerBullet( );
+			Sprite = new cSpriteQuake(ModelsMD2.Yoshi);
+			Sprite.ModelState = State.Idle;
 			Sprite.SpriteAttitude = cMatrix3.scale( 2, 0.8f, 0.4f ); 
 			setRadius( cGame3D.PLAYERRADIUS ); //Default cCritter.PLAYERRADIUS is 0.4.  
 			setHealth( 10 ); 
@@ -57,7 +58,7 @@ namespace ACFramework
 			ListenerAcceleration = 160.0f; //So Hopper can overcome gravity.  Only affects hop.
 		
             // YHopper hop strength 12.0
-			Listener = new cListenerScooterYHopper( 0.2f, 12.0f ); 
+			Listener = new cListenerQuakeScooterYHopper( 0.2f, 12.0f ); 
             // the two arguments are walkspeed and hop strength -- JC
             
             addForce( new cForceGravity( 50.0f )); /* Uses  gravity. Default strength is 25.0.
