@@ -3,6 +3,8 @@ using System.Windows.Forms;
 
 namespace ACFramework
 {
+
+    //add comment for testing
     class ACDoc
     {
         static protected bool RESTART = false;
