@@ -334,7 +334,6 @@ namespace ACFramework
         private static readonly ModelsMD2Info[] minfo = {
             new ModelsMD2Info( "Yoshi", "blue yoshi.pcx", 0.1f, false ),
             new ModelsMD2Info( "Chicken", "Psycho.pcx", 0.1f, true ),
-          
         };            
 
         private static int[] randomCritters;
