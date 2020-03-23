@@ -363,7 +363,7 @@ namespace ACFramework
 			//Then draw a ramp to the top of the wall.  Scoot it over against the right wall.
 			float planckwidth = 8.0f * height; 
 			pwall = new cCritterWall( 
-				new cVector3( _border.Hix -planckwidth / 2.0f, _border.Loy, _border.Hiz - 2.0f), 
+				new cVector3( _border.Hix -planckwidth / 3.0f, _border.Loy, _border.Hiz - 2.0f), 
 				new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
 				planckwidth+2.0f, //thickness param for wall's dy which is perpenedicualr to the baseline, 
 						//which goes into the screen, so thickness goes to the right 
