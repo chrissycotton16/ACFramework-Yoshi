@@ -166,6 +166,21 @@ namespace ACFramework
             if (pownergame != null) //Just to be safe.
                 Sprite = new cSpriteQuake(Framework.models.selectRandomCritter());
             
+			//draw critters to player to attack (tutorial 2)
+			if(distanceTo(Player) < 5){
+				Sprite.ModelState = State.CrouchCrawl;
+				clearForcelist();
+				addForce(new cForceDrag(5.0f));
+				addForce(new cForceGravity(25.0f, new cVector3(0.0f,-1f,0.00f)));
+			}
+			else if(distanceTo(Player) > 5){
+				clearForcelist();
+				addForce(new cForceGravity(25.0f, new cVector3(0.0f, -1f, 0.00f)));
+				addForce(new cForceDrag(0.0f));
+				addForce(new cForceObjectSeek(Player, 0.1f));
+				Sprite.ModelState = State.Run;
+			}
+
             // example of setting a specific model
             // setSprite(new cSpriteQuake(ModelsMD2.Knight));
             
@@ -298,7 +313,7 @@ namespace ACFramework
 	{ 
 		public static readonly float TREASURERADIUS = 1.2f; 
 		public static readonly float WALLTHICKNESS = 0.5f; 
-		public static readonly float PLAYERRADIUS = 0.2f; 
+		public static readonly float PLAYERRADIUS = 0.4f; 
 		public static readonly float MAXPLAYERSPEED = 30.0f; 
 		private cCritterTreasure _ptreasure;
         private cCritterShape shape;
