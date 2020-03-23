@@ -346,7 +346,7 @@ namespace ACFramework
 			SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Sky ); //ceiling 
 		
 			WrapFlag = cCritter.BOUNCE; 
-			_seedcount = 13; 
+			_seedcount = 5; 
 			setPlayer( new cCritter3DPlayer( this )); 
 			_ptreasure = new cCritterTreasure( this );
             shape = new cCritterShape(this);
