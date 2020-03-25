@@ -327,8 +327,21 @@ namespace ACFramework
 			_menuflags &= ~ cGame.MENU_BOUNCEWRAP; 
 			_menuflags |= cGame.MENU_HOPPER; //Turn on hopper listener option.
 			_spritetype = cGame.ST_MESHSKIN; 
+			//opening message box window
+			MessageBox.Show("Welcome to the famous Yoshi Misadventures In this game you will be fighting the mean Macho Chick and his followers to save your friends! Good luck the arrow keys are for movement and the pg up is to jump and the spacebar is to shoot. Good Luck");
+			//options for the game amoun of enemies you will fight in the first room
+			
+			DialogResult result1 = MessageBox.Show("Yes for hard level no for easy level","Important Question", MessageBoxButtons.YesNo,MessageBoxIcon.Question);
 			setBorder( 64.0f, 16.0f, 64.0f ); // size of the world
-		
+			if (result1 == DialogResult.Yes){
+			_seedcount=10;
+			}
+			if (result1 == DialogResult.No){
+			_seedcount =2;
+			}
+{
+    MessageBox.Show("You answered yes, yes and no.");
+}
 			cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
 			setSkyBox( skeleton );
@@ -376,7 +389,7 @@ namespace ACFramework
 		
 		
 			//Then draw a ramp to the top of the wall.  Scoot it over against the right wall.
-			float planckwidth = 8.0f * height; 
+			float planckwidth = 9.0f * height; 
 			pwall = new cCritterWall( 
 				new cVector3( _border.Hix -planckwidth / 3.0f, _border.Loy, _border.Hiz - 2.0f), 
 				new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
@@ -400,6 +413,54 @@ namespace ACFramework
 		} 
 
         public void setRoom1( )
+        {
+            Biota.purgeCritters<cCritterWall>();
+            Biota.purgeCritters<cCritter3Dcharacter>();
+            Biota.purgeCritters<cCritterShape>();
+            setBorder(80.0f, 15.0f, 50.0f); 
+	        cRealBox3 skeleton = new cRealBox3();
+            skeleton.copy( _border );
+	        setSkyBox(skeleton);
+	        SkyBox.setAllSidesTexture( BitmapRes.Wood2, 2 );
+	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Wall2 );
+	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Blue );
+	        _seedcount = 3; ; ;
+	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
+            float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
+			halfway down the hall, but we can offset it if we like. */
+            float height = 3.0f * _border.YSize;
+			//this code makes the wall go up or down
+            float ycenter = -_border.YRadius + height / 2.0f;
+            float wallthickness = cGame3D.WALLTHICKNESS;
+            cCritterWall pwall = new cCritterWall(
+                new cVector3(_border.Midx + 3.0f, ycenter, zpos),
+                new cVector3(_border.Hix+3.0f, ycenter, zpos),
+                height, //thickness param for wall's dy which goes perpendicular to the 
+                //baseline established by the frist two args, up the screen 
+                wallthickness, //height argument for this wall's dz  goes into the screen 
+                this);;
+            cSpriteTextureBox pspritebox =
+                new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); //Sets all sides 
+            /* We'll tile our sprites three times along the long sides, and on the
+        short ends, we'll only tile them once, so we reset these two. */
+            pwall.Sprite = pspritebox;
+            wentThrough = true;
+            startNewRoom = Age;
+			
+			
+			//MADE DOOR HERE put in room one
+			//------------------------------------------------------------------------------------------------
+			cCritterDoor pdwall = new cCritterDoor( 
+				new cVector3( _border.Lox, _border.Loy, _border.Midz ), 
+				new cVector3( _border.Lox, _border.Midy - 3, _border.Midz ), 
+				0.1f, 2, this ); 
+			cSpriteTextureBox pspritedoor = 
+				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
+			pdwall.Sprite = pspritedoor;
+			//---------------------------------------------------------------------------------------------------
+		}
+		
+		public void setRoom2( )
         {
             Biota.purgeCritters<cCritterWall>();
             Biota.purgeCritters<cCritter3Dcharacter>();
@@ -446,7 +507,6 @@ namespace ACFramework
 			pdwall.Sprite = pspritedoor;
 			//---------------------------------------------------------------------------------------------------
 		}
-		
 		public override void seedCritters() 
 		{
 			Biota.purgeCritters<cCritterBullet>(); 
@@ -518,18 +578,24 @@ namespace ACFramework
 			for ( int i = 0; i < modelstoadd; i++) 
 				new cCritter3Dcharacter( this ); 
 		// (3) Maybe check some other conditions.
-
+		//int rmcnt =1;
             if (wentThrough && (Age - startNewRoom) > 2.0f)
             {
-               
+              // rmcnt++;
                 wentThrough = false;
             }
-
+			
             if (doorcollision == true)
             {
+				
                 setRoom1();
                 doorcollision = false;
             }
+			//if (rmcnt==3 && doorcollision == true)
+			//{
+				//MessageBox.Show("HEYO DOOR NUM 3 no worky");
+			//setRoom2();
+			//}
 		} 
 		
 	} 
