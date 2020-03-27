@@ -348,6 +348,45 @@ namespace ACFramework
 
 
 	} 
+
+	//new bullet class - will be a mode change (key press W) and will shoot 2 bullets doing double the damage)
+	class cCritterBulletSilverDouble : cCritterBulletSilver
+	{
+		public static readonly int SCOREVALUE = 15;
+		
+		public cCritterBulletSilverDouble()
+		{
+			_value = cCritterBulletSilverDouble.SCOREVALUE;
+			cSpriteSphere bulletsprite1 = new cSphere(cCritter.BULLETRADIUS, Color.DarkRed );
+			Sprite = bulletsprite1; /* Also sets cSprite._prismdz to CritterBullet.BULLETPRISMDZ. */ 
+			//how would i make the second one??
+		}
+		
+		 /// <summary>
+        /// Use to create and return another bullet object.  This is a virtual function, so if you are possibly
+        /// using a derived object with a base class name, it will return a bullet of the type of the derived
+        /// object.
+        /// </summary>
+        /// <returns></returns>
+        public override cCritterBullet Create()
+        {
+            return new cCritterBulletSilverDouble();
+        }
+
+		//override initialize???
+
+        /// <summary>
+        /// Gets the name of this class as a string -- useful for polymorphism
+        /// </summary>
+        public override string RuntimeClass
+		{
+			get
+			{
+                return "cCritterBulletSilverDouble";
+            }
+		}
+	
+	}
 	
 	class cCritterBulletSilverMissile : cCritterBulletSilver 
 	{ 
