@@ -40,7 +40,7 @@ namespace ACFramework
 	class cCritter3DPlayer : cCritterArmedPlayer 
 	{ 
         private bool warningGiven = false;
-		
+		//comment from kalyn
         public cCritter3DPlayer( cGame pownergame ) 
             : base( pownergame ) 
 		{ 
