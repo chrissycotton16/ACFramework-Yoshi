@@ -36,11 +36,11 @@ namespace ACFramework
 	} 
 	
 	//==============Critters for the cGame3D: Player, Ball, Treasure ================ 
-	
+
+
 	class cCritter3DPlayer : cCritterArmedPlayer 
 	{ 
         private bool warningGiven = false;
-		//comment from kalyn
         public cCritter3DPlayer( cGame pownergame ) 
             : base( pownergame ) 
 		{ 
@@ -245,6 +245,93 @@ namespace ACFramework
             }
         }
 	} 
+
+	class cCritter3DHealer: cCritter3Dcharacter{
+			
+        public cCritter3DHealer( cGame pownergame ) 
+            : base( pownergame ) 
+		{
+            addForce(new cForceGravity(25.0f, new cVector3( 0.0f, -1, 0.00f ))); 
+			addForce( new cForceDrag( 20.0f ) );  // default friction strength 0.5 
+			Density = 2.0f; 
+			MaxSpeed = 30.0f;
+
+			
+            if (pownergame != null) //Just to be safe.
+                Sprite = new cSpriteQuake(ModelsMD2.Squirtle);
+			
+			Sprite.ModelState = State.Idle;
+
+			//heal player if they get close enough
+			if(distanceTo(Player) < 2){
+				Player.addHealth(10);
+			}
+			
+            // example of setting a specific model
+            // setSprite(new cSpriteQuake(ModelsMD2.Knight));
+            
+            if ( Sprite is cSpriteQuake ) //Don't let the figurines tumble.  
+			{ 
+				AttitudeToMotionLock = false;   
+				Attitude = new cMatrix3( new cVector3( 0.0f, 0.0f, 1.0f ), 
+                    new cVector3( 1.0f, 0.0f, 0.0f ), 
+                    new cVector3( 0.0f, 1.0f, 0.0f ), Position); 
+				/* Orient them so they are facing towards positive Z with heads towards Y. */ 
+			} 
+			Bounciness = 0.0f; //Not 1.0 means it loses a bit of energy with each bounce.
+			setRadius( 1.0f );
+            MinTwitchThresholdSpeed = 4.0f; //Means sprite doesn't switch direction unless it's moving fast 
+			randomizePosition( new cRealBox3( new cVector3( _movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f), 
+				new cVector3( _movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f))); 
+				/* I put them ahead of the player  */ 
+
+                        
+			if ( pownergame != null ) //Then we know we added this to a game so pplayer() is valid 
+				addForce( new cForceObjectSeek( Player, 0.5f ));
+
+            int begf = Framework.randomOb.random(0, 171);
+            int endf = Framework.randomOb.random(0, 171);
+
+            if (begf > endf)
+            {
+                int temp = begf;
+                begf = endf;
+                endf = temp;
+            }
+
+			Sprite.setstate( State.Other, begf, endf, StateType.Repeat );
+
+
+            _wrapflag = cCritter.BOUNCE;
+
+		} 
+
+		
+		public override void update( ACView pactiveview, float dt ) 
+		{ 
+			base.update( pactiveview, dt ); //Always call this first
+			if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
+				delete_me(); //tell the game to remove yourself if you fall up to the hiz.
+        } 
+
+		// do a delete_me if you hit the left end 
+	
+		public override void die() 
+		{ 
+			Player.addHealth( 10 ); 
+			base.die(); 
+		} 
+
+        public override string RuntimeClass
+        {
+            get
+            {
+                return "cCritter3DHealer";
+            }
+        }
+	}
+
+
 	
 	class cCritterTreasure : cCritter 
 	{   // Try jumping through this hoop
@@ -453,6 +540,8 @@ namespace ACFramework
 			Biota.purgeCritters<cCritter3Dcharacter>();
             for (int i = 0; i < _seedcount; i++) 
 				new cCritter3Dcharacter( this );
+
+			new cCritter3DHealer(this);
             Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f)); 
 				/* We start at hiz and move towards	loz */ 
 		} 
