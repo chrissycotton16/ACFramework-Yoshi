@@ -76,6 +76,7 @@ namespace ACFramework
             {
                 warningGiven = true;
                 MessageBox.Show("DON'T GO THROUGH THAT DOOR!!!  DON'T EVEN THINK ABOUT IT!!!");
+				
             }
  
         } 
@@ -90,6 +91,11 @@ namespace ACFramework
 	as collide can change the positions. */
             _baseAccessControl = 1;
 			bool collided = base.collide( pcritter );
+
+			//
+			//add sound into here!!! YOSHI HITTING SOMETHING
+
+
             _baseAccessControl = 0;
             if (!collided) 
 				return false;
@@ -215,7 +221,6 @@ namespace ACFramework
             }
 
 			Sprite.setstate( State.Other, begf, endf, StateType.Repeat );
-
 
             _wrapflag = cCritter.BOUNCE;
 
@@ -359,7 +364,7 @@ namespace ACFramework
 			SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Sky ); //ceiling 
 		
 			WrapFlag = cCritter.BOUNCE; 
-			_seedcount = 13; 
+			_seedcount = 5; 
 			setPlayer( new cCritter3DPlayer( this )); 
 			_ptreasure = new cCritterTreasure( this );
             shape = new cCritterShape(this);
@@ -408,12 +413,16 @@ namespace ACFramework
 			cSpriteTextureBox pspritedoor = 
 				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
 			pdwall.Sprite = pspritedoor;
-
-             
+			
 		} 
 
         public void setRoom1( )
         {
+
+			//Now hear me out guys if I cant get a new room what if i just build a new room on top of that
+
+
+
             Biota.purgeCritters<cCritterWall>();
             Biota.purgeCritters<cCritter3Dcharacter>();
             Biota.purgeCritters<cCritterShape>();
@@ -424,7 +433,7 @@ namespace ACFramework
 	        SkyBox.setAllSidesTexture( BitmapRes.Wood2, 2 );
 	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Wall2 );
 	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Blue );
-	        _seedcount = 3; ; ;
+	        _seedcount = 20; ; ;
 	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
@@ -443,21 +452,21 @@ namespace ACFramework
                 new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); //Sets all sides 
             /* We'll tile our sprites three times along the long sides, and on the
         short ends, we'll only tile them once, so we reset these two. */
-            pwall.Sprite = pspritebox;
-            wentThrough = true;
-            startNewRoom = Age;
-			
-			
 			//MADE DOOR HERE put in room one
 			//------------------------------------------------------------------------------------------------
 			cCritterDoor pdwall = new cCritterDoor( 
 				new cVector3( _border.Lox, _border.Loy, _border.Midz ), 
 				new cVector3( _border.Lox, _border.Midy - 3, _border.Midz ), 
-				0.1f, 2, this ); 
+				0.1f, 15, this ); 
 			cSpriteTextureBox pspritedoor = 
 				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
 			pdwall.Sprite = pspritedoor;
 			//---------------------------------------------------------------------------------------------------
+            pwall.Sprite = pspritebox;
+            wentThrough = true;
+            startNewRoom = Age;
+			
+			
 		}
 		
 		public void setRoom2( )
@@ -471,7 +480,7 @@ namespace ACFramework
 	        setSkyBox(skeleton);
 	        SkyBox.setAllSidesTexture( BitmapRes.Wood2, 2 );
 	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Wall2 );
-	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Blue );
+	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Red );
 	        _seedcount = 0; ; ;
 	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
@@ -496,16 +505,7 @@ namespace ACFramework
             startNewRoom = Age;
 			
 			
-			//MADE DOOR HERE put in room one
-			//------------------------------------------------------------------------------------------------
-			cCritterDoor pdwall = new cCritterDoor( 
-				new cVector3( _border.Lox, _border.Loy, _border.Midz ), 
-				new cVector3( _border.Lox, _border.Midy - 3, _border.Midz ), 
-				0.1f, 2, this ); 
-			cSpriteTextureBox pspritedoor = 
-				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
-			pdwall.Sprite = pspritedoor;
-			//---------------------------------------------------------------------------------------------------
+			
 		}
 		public override void seedCritters() 
 		{
@@ -578,24 +578,32 @@ namespace ACFramework
 			for ( int i = 0; i < modelstoadd; i++) 
 				new cCritter3Dcharacter( this ); 
 		// (3) Maybe check some other conditions.
-		//int rmcnt =1;
-            if (wentThrough && (Age - startNewRoom) > 2.0f)
+		int rmcnt =1;
+            if (wentThrough && (Age - startNewRoom) > 1.0f)
             {
-              // rmcnt++;
+            
                 wentThrough = false;
             }
 			
             if (doorcollision == true)
             {
-				
+				if (rmcnt ==1&& Score>=6){
+				rmcnt=rmcnt+1;
                 setRoom1();
                 doorcollision = false;
+
+				}
+				if (rmcnt ==2&& Score>=20){
+				rmcnt=rmcnt+1;
+                setRoom2();
+                doorcollision = false;
+				}
+
+				///////////////////////////////////////
+				
             }
-			//if (rmcnt==3 && doorcollision == true)
-			//{
-				//MessageBox.Show("HEYO DOOR NUM 3 no worky");
-			//setRoom2();
-			//}
+				
+			
 		} 
 		
 	} 
