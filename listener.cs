@@ -95,9 +95,9 @@ namespace ACFramework
             /* If you get here, you've pressed an arrow key.  First match the velocity to 
             the arrow key direction, and then match the attitude. */
             if (left)
-                pcritter.Velocity = new cVector3(-pcritter.MaxSpeed, 0.0f, 0.0f);
+                pcritter.Velocity = new cVector3(-pcritter.MaxSpeed , 0.0f, 0.0f);
             if (right)
-                pcritter.Velocity = new cVector3(pcritter.MaxSpeed, 0.0f, 0.0f);
+                pcritter.Velocity = new cVector3(pcritter.MaxSpeed , 0.0f, 0.0f);
             if (down)
                 pcritter.Velocity = new cVector3(0.0f, -pcritter.MaxSpeed, 0.0f);
             if (up)
@@ -497,9 +497,9 @@ namespace ACFramework
                     pcritter.yaw((float)Math.PI); //This puts _velocity back in the correct direction.
                 //(b) Alter the motion matrix.
                 if (left)
-                    pcritter.yaw(0.1f * dt * turnspeed(pcontroller.keystateage(vk.Left)));
+                    pcritter.yaw(0.4f * dt * turnspeed(pcontroller.keystateage(vk.Left)));
                 if (right)
-                    pcritter.yaw(0.1f * -dt * turnspeed(pcontroller.keystateage(vk.Right)));
+                    pcritter.yaw(0.4f * -dt * turnspeed(pcontroller.keystateage(vk.Right)));
                 //(c) Match the attitude to the motion matrix.
                 pcritter.copyMotionMatrixToAttitudeMatrix();
                 if (inreverse) //Keep the tangent and atttitudeTangent in opposite directions.
