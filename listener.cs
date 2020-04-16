@@ -1,5 +1,7 @@
 using System;
 using OpenTK.Input;
+using System.Windows.Forms;
+
 
 // For ACFramework Version 1.2, I've fixed a bug that occurred when the player's maximum speed
 // was set differently in the player's constructor -- in this bug, the hop strength used to be
@@ -443,6 +445,22 @@ namespace ACFramework
             bool down = Framework.Keydev[vk.Down];
             bool pageup = Framework.Keydev[vk.PageUp];
             bool pagedown = Framework.Keydev[vk.PageDown];
+            bool Q = Framework.Keydev[vk.Q];
+            bool W = Framework.Keydev[vk.W];
+
+
+            if(Q)
+            {
+                //MessageBox.Show("f1 listener");
+                ((cCritter3DPlayer)pcritter).Mode1 = 'Q';
+                return;
+            }
+            if(W)
+            {
+                //MessageBox.Show("f2 listener");
+                ((cCritter3DPlayer)pcritter).Mode1 = 'W';
+                return;
+            }
 
             if (!_hopping && up)
             {

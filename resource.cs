@@ -261,6 +261,8 @@ namespace ACFramework
         public static readonly int U = 15;
         public static readonly int I = 16;
         public static readonly int D = 17;
+        public static readonly int Q = 18;
+        public static readonly int W = 19;
 
         public static Key[] key;
 
@@ -283,7 +285,9 @@ namespace ACFramework
                 Key.Delete,
                 Key.U,
                 Key.I,
-                Key.D
+                Key.D,
+                Key.Q,
+                Key.W
             };
 
         }
@@ -328,11 +332,13 @@ namespace ACFramework
 
         public static readonly int Yoshi = 0;
         public static readonly int Chicken = 1;
+        public static readonly int bunny = 3;
  
         // at least one must be set true
         private static readonly ModelsMD2Info[] minfo = {
             new ModelsMD2Info( "Yoshi", "blue yoshi.pcx", 0.1f, false ),
             new ModelsMD2Info( "Chicken", "Psycho.pcx", 0.1f, true ),
+            new ModelsMD2Info( "bunny", "bunbun.pcx", 0.1f, false)
         };            
 
         private static int[] randomCritters;
