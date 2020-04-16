@@ -225,6 +225,7 @@ namespace ACFramework
 		public override void update( ACView pactiveview, float dt ) 
 		{ 
 			base.update( pactiveview, dt ); //Always call this first
+			rotateAttitude(Tangent.rotationAngle(AttitudeTangent));
 			if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
 				delete_me(); //tell the game to remove yourself if you fall up to the hiz.
         } 
@@ -264,7 +265,7 @@ namespace ACFramework
 
 			//heal player if they get close enough
 			if(distanceTo(Player) < 2){
-				Player.addHealth(10);
+				Player.addHealth(11);
 			}
 			
             // example of setting a specific model
@@ -414,7 +415,7 @@ namespace ACFramework
 			_menuflags &= ~ cGame.MENU_BOUNCEWRAP; 
 			_menuflags |= cGame.MENU_HOPPER; //Turn on hopper listener option.
 			_spritetype = cGame.ST_MESHSKIN; 
-			setBorder( 64.0f, 16.0f, 64.0f ); // size of the world
+			setBorder( 50.0f, 14.0f, 50.0f ); // size of the world
 		
 			cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
@@ -445,35 +446,74 @@ namespace ACFramework
 			//First draw a wall with dy height resting on the bottom of the world.
 			float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */ 
-			float height = 0.1f * _border.YSize; 
+			float height = 0.15f * _border.YSize; 
 			float ycenter = -_border.YRadius + height / 2.0f; 
 			float wallthickness = cGame3D.WALLTHICKNESS;
-            cCritterWall pwall = new cCritterWall( 
-				new cVector3( _border.Midx + 2.0f, ycenter, zpos ), 
-				new cVector3( _border.Hix, ycenter, zpos ), 
-				height, //thickness param for wall's dy which goes perpendicular to the 
+     //       cCritterWall pwall = new cCritterWall( 
+	//			new cVector3( _border.Midx + 2.0f, ycenter, zpos ), 
+		//		new cVector3( _border.Hix, ycenter, zpos ), 
+		//		height, //thickness param for wall's dy which goes perpendicular to the 
 					//baseline established by the frist two args, up the screen 
-				wallthickness+22.0f, //height argument for this wall's dz  goes into the screen 
-				this );
-			cSpriteTextureBox pspritebox = 
-				new cSpriteTextureBox( pwall.Skeleton, BitmapRes.Wall3, 16 ); //Sets all sides 
+		//		wallthickness+22.0f, //height argument for this wall's dz  goes into the screen 
+		//		this );
+		//	cSpriteTextureBox pspritebox = 
+		//		new cSpriteTextureBox( pwall.Skeleton, BitmapRes.Wall3, 16 ); //Sets all sides 
 				/* We'll tile our sprites three times along the long sides, and on the
 			short ends, we'll only tile them once, so we reset these two. */
-          pwall.Sprite = pspritebox; 
+      //    pwall.Sprite = pspritebox; 
 		
 		
 			//Then draw a ramp to the top of the wall.  Scoot it over against the right wall.
 			float planckwidth = 8.0f * height; 
-			pwall = new cCritterWall( 
-				new cVector3( _border.Hix -planckwidth / 2.0f, _border.Loy, _border.Hiz - 2.0f), 
-				new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
-				planckwidth+2.0f, //thickness param for wall's dy which is perpenedicualr to the baseline, 
-						//which goes into the screen, so thickness goes to the right 
-				wallthickness+0.25f, //_border.zradius(),  //height argument for wall's dz which goes into the screen 
-				this );
-            cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
-                BitmapRes.Wall3, 2 );
-            pwall.Sprite = stb;
+
+			cCritterWall pwall1 = new cCritterWall(
+                new cVector3(_border.Midx+50.0f + 0.0f, ycenter, zpos),
+                new cVector3(_border.Hix-30.0f, ycenter, zpos),
+                height, //thickness param for wall's dy which goes perpendicular to the 
+                wallthickness, //height argument for this wall's dz  goes into the screen 
+                this);
+
+			
+         //   cCritterWall pwall2 = new cCritterWall(
+           //     new cVector3(_border.Midx - 2.0f, ycenter, zpos + 0.0f),
+             //   new cVector3(_border.Hix - 32.0f, ycenter, zpos),
+               // height, //thickness param for wall's dy which goes perpendicular to the 
+                //wallthickness, //height argument for this wall's dz  goes into the screen 
+                //this);
+
+          //dont touch this wall
+			  cCritterWall pwall3 = new cCritterWall(
+                new cVector3(_border.Midx -50.0f, ycenter, zpos + 13.0f),
+                new cVector3(_border.Hix - 35.0f, ycenter, zpos - 1.0f),
+                height, //thickness param for wall's dy which goes perpendicular to the 
+                wallthickness, //height argument for this wall's dz  goes into the screen 
+                this);
+
+
+			cSpriteTextureBox pspritebox1 = new cSpriteTextureBox(pwall1.Skeleton, BitmapRes.Wall3, 16); 
+            //cSpriteTextureBox pspritebox2 = new cSpriteTextureBox(pwall2.Skeleton, BitmapRes.Wall3, 16); 
+            cSpriteTextureBox pspritebox3 = new cSpriteTextureBox(pwall3.Skeleton, BitmapRes.Wall3, 16);            
+			//cSpriteTextureBox pspritebox4 = new cSpriteTextureBox(pwall4.Skeleton, BitmapRes.Wall3, 16); 
+          //cSpriteTextureBox pspritebox5 = new cSpriteTextureBox(pwall5.Skeleton, BitmapRes.Wall3, 16); 
+
+            pwall1.Sprite = pspritebox1;
+           // pwall2.Sprite = pspritebox2;
+            pwall3.Sprite = pspritebox3;
+          //  pwall4.Sprite = pspritebox4;
+          //  pwall5.Sprite = pspritebox5;
+          
+
+			//comments out ramp for now
+			//pwall = new cCritterWall( 
+				//new cVector3( _border.Hix -planckwidth / 2.0f, _border.Loy, _border.Hiz - 2.0f), 
+				//new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
+				//planckwidth+2.0f, //thickness param for wall's dy which is perpenedicualr to the baseline, 
+				//which goes into the screen, so thickness goes to the right 
+				//wallthickness+0.25f, //_border.zradius(),  //height argument for wall's dz which goes into the screen 
+				//this );
+         //   cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
+           //     BitmapRes.Wall3, 2 );
+            //pwall.Sprite = stb;
 		
 			cCritterDoor pdwall = new cCritterDoor( 
 				new cVector3( _border.Lox, _border.Loy, _border.Midz ), 
