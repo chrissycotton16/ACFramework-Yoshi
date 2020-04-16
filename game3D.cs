@@ -41,6 +41,7 @@ namespace ACFramework
 	class cCritter3DPlayer : cCritterArmedPlayer 
 	{ 
         private bool warningGiven = false;
+		private char Mode = 'Q';
         public cCritter3DPlayer( cGame pownergame ) 
             : base( pownergame ) 
 		{ 
@@ -122,6 +123,7 @@ namespace ACFramework
                 return "cCritter3DPlayer";
             }
         }
+		public char Mode1{ get => Mode; set => Mode = value;}
 	} 
 	
    
@@ -136,13 +138,54 @@ namespace ACFramework
             return new cCritter3DPlayerBullet();
         }
 		
-		public override void initialize( cCritterArmed pshooter ) 
+		public override void initialize( cCritterArmed pshooter ) //!!!!!!! BULLET TYPE CHANGED HERE
 		{ 
-			base.initialize( pshooter );
-            Sprite.FillColor = Color.Crimson;
+            //Sprite.FillColor = Color.Crimson;
+			base.initialize( pshooter );  // calls the cCritterBullet initialize 
+			if(((cCritter3DPlayer)pshooter).Mode1 == 'Q')
+			{
+				Sprite = new cSpriteSphere(0.2f);
+				Sprite.FillColor = Color.Purple;
+			}
+			else//w
+			{
+				Sprite = new cSpriteQuake(ModelsMD2.bunny);
+				Radius = 0.2f;
+				//Sprite = new cSpriteRectangle(0.2f);
+				//Sprite.FillColor = Color.Green;
+			}
             // can use setSprite here too
             setRadius(0.1f);
 		} 
+
+		 public override bool collide(cCritter pcritter)
+         {
+            if(isTarget(pcritter) && touch(pcritter))
+            {
+                if (((cCritter3DPlayer)Player).Mode1 == 'Q')
+				{
+					Random rnd = new Random();
+					int randomDeath = rnd.Next (1, 3);
+					if(randomDeath == 1)
+						pcritter.Sprite.ModelState = State.FallbackDie;
+					if(randomDeath == 2)
+						pcritter.Sprite.ModelState = State.FallForwardDie;
+					pcritter.clearForcelist();
+					pcritter.addForce(new cForceDrag(50.0f));
+					pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));
+				}
+                     
+                else if(((cCritter3DPlayer)Player).Mode1 == 'W')//double damage
+                {
+
+                   //take away twice the amount of health -- how????
+
+                }
+               
+                return true;
+            }
+            return false;
+        }
 
         public override string RuntimeClass
         {
