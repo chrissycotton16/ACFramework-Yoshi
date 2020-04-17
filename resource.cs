@@ -336,15 +336,17 @@ namespace ACFramework
 
         public static readonly int Yoshi = 0;
         public static readonly int Chicken = 1;
-        public static readonly int bunny = 3;
         public static readonly int Squirtle = 2;
+        public static readonly int bunny = 3;
+
  
         // at least one must be set true
         private static readonly ModelsMD2Info[] minfo = {
             new ModelsMD2Info( "Yoshi", "blue yoshi.pcx", 0.1f, false ),
             new ModelsMD2Info( "Chicken", "Psycho.pcx", 0.1f, true ),
+            new ModelsMD2Info("Squirtle", "squirt.pcx", 0.1f, false),
             new ModelsMD2Info( "bunny", "bunbun.pcx", 0.1f, false)
-            new ModelsMD2Info("Squirtle", "squirt.pcx", 0.1f, false)
+
         };            
 
         private static int[] randomCritters;
