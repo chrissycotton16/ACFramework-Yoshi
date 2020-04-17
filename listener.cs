@@ -1,5 +1,7 @@
 using System;
 using OpenTK.Input;
+using System.Windows.Forms;
+
 
 // For ACFramework Version 1.2, I've fixed a bug that occurred when the player's maximum speed
 // was set differently in the player's constructor -- in this bug, the hop strength used to be
@@ -93,9 +95,9 @@ namespace ACFramework
             /* If you get here, you've pressed an arrow key.  First match the velocity to 
             the arrow key direction, and then match the attitude. */
             if (left)
-                pcritter.Velocity = new cVector3(-pcritter.MaxSpeed, 0.0f, 0.0f);
+                pcritter.Velocity = new cVector3(-pcritter.MaxSpeed , 0.0f, 0.0f);
             if (right)
-                pcritter.Velocity = new cVector3(pcritter.MaxSpeed, 0.0f, 0.0f);
+                pcritter.Velocity = new cVector3(pcritter.MaxSpeed , 0.0f, 0.0f);
             if (down)
                 pcritter.Velocity = new cVector3(0.0f, -pcritter.MaxSpeed, 0.0f);
             if (up)
@@ -443,6 +445,22 @@ namespace ACFramework
             bool down = Framework.Keydev[vk.Down];
             bool pageup = Framework.Keydev[vk.PageUp];
             bool pagedown = Framework.Keydev[vk.PageDown];
+            bool Q = Framework.Keydev[vk.Q];
+            bool W = Framework.Keydev[vk.W];
+
+
+            if(Q)
+            {
+                //MessageBox.Show("f1 listener");
+                ((cCritter3DPlayer)pcritter).Mode1 = 'Q';
+                return;
+            }
+            if(W)
+            {
+                //MessageBox.Show("f2 listener");
+                ((cCritter3DPlayer)pcritter).Mode1 = 'W';
+                return;
+            }
 
             if (!_hopping && up)
             {
@@ -479,9 +497,9 @@ namespace ACFramework
                     pcritter.yaw((float)Math.PI); //This puts _velocity back in the correct direction.
                 //(b) Alter the motion matrix.
                 if (left)
-                    pcritter.yaw(0.1f * dt * turnspeed(pcontroller.keystateage(vk.Left)));
+                    pcritter.yaw(0.4f * dt * turnspeed(pcontroller.keystateage(vk.Left)));
                 if (right)
-                    pcritter.yaw(0.1f * -dt * turnspeed(pcontroller.keystateage(vk.Right)));
+                    pcritter.yaw(0.4f * -dt * turnspeed(pcontroller.keystateage(vk.Right)));
                 //(c) Match the attitude to the motion matrix.
                 pcritter.copyMotionMatrixToAttitudeMatrix();
                 if (inreverse) //Keep the tangent and atttitudeTangent in opposite directions.

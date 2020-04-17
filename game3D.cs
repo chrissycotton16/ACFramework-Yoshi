@@ -36,11 +36,12 @@ namespace ACFramework
 	} 
 	
 	//==============Critters for the cGame3D: Player, Ball, Treasure ================ 
-	
+
+
 	class cCritter3DPlayer : cCritterArmedPlayer 
 	{ 
         private bool warningGiven = false;
-		//comment from kalyn
+		private char Mode = 'Q';
         public cCritter3DPlayer( cGame pownergame ) 
             : base( pownergame ) 
 		{ 
@@ -128,6 +129,7 @@ namespace ACFramework
                 return "cCritter3DPlayer";
             }
         }
+		public char Mode1{ get => Mode; set => Mode = value;}
 	} 
 	
    
@@ -142,13 +144,54 @@ namespace ACFramework
             return new cCritter3DPlayerBullet();
         }
 		
-		public override void initialize( cCritterArmed pshooter ) 
+		public override void initialize( cCritterArmed pshooter ) //!!!!!!! BULLET TYPE CHANGED HERE
 		{ 
-			base.initialize( pshooter );
-            Sprite.FillColor = Color.Crimson;
+            //Sprite.FillColor = Color.Crimson;
+			base.initialize( pshooter );  // calls the cCritterBullet initialize 
+			if(((cCritter3DPlayer)pshooter).Mode1 == 'Q')
+			{
+				Sprite = new cSpriteSphere(0.2f);
+				Sprite.FillColor = Color.Purple;
+			}
+			else//w
+			{
+				Sprite = new cSpriteQuake(ModelsMD2.bunny);
+				Radius = 0.2f;
+				//Sprite = new cSpriteRectangle(0.2f);
+				//Sprite.FillColor = Color.Green;
+			}
             // can use setSprite here too
             setRadius(0.1f);
 		} 
+
+		 public override bool collide(cCritter pcritter)
+         {
+            if(isTarget(pcritter) && touch(pcritter))
+            {
+                if (((cCritter3DPlayer)Player).Mode1 == 'Q')
+				{
+					Random rnd = new Random();
+					int randomDeath = rnd.Next (1, 3);
+					if(randomDeath == 1)
+						pcritter.Sprite.ModelState = State.FallbackDie;
+					if(randomDeath == 2)
+						pcritter.Sprite.ModelState = State.FallForwardDie;
+					pcritter.clearForcelist();
+					pcritter.addForce(new cForceDrag(50.0f));
+					pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));
+				}
+                     
+                else if(((cCritter3DPlayer)Player).Mode1 == 'W')//double damage
+                {
+
+                   //take away twice the amount of health -- how????
+
+                }
+               
+                return true;
+            }
+            return false;
+        }
 
         public override string RuntimeClass
         {
@@ -230,6 +273,7 @@ namespace ACFramework
 		public override void update( ACView pactiveview, float dt ) 
 		{ 
 			base.update( pactiveview, dt ); //Always call this first
+			rotateAttitude(Tangent.rotationAngle(AttitudeTangent));
 			if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
 				delete_me(); //tell the game to remove yourself if you fall up to the hiz.
         } 
@@ -250,6 +294,93 @@ namespace ACFramework
             }
         }
 	} 
+
+	class cCritter3DHealer: cCritter3Dcharacter{
+			
+        public cCritter3DHealer( cGame pownergame ) 
+            : base( pownergame ) 
+		{
+            addForce(new cForceGravity(25.0f, new cVector3( 0.0f, -1, 0.00f ))); 
+			addForce( new cForceDrag( 20.0f ) );  // default friction strength 0.5 
+			Density = 2.0f; 
+			MaxSpeed = 30.0f;
+
+			
+            if (pownergame != null) //Just to be safe.
+                Sprite = new cSpriteQuake(ModelsMD2.Squirtle);
+			
+			Sprite.ModelState = State.Idle;
+
+			//heal player if they get close enough
+			if(distanceTo(Player) < 2){
+				Player.addHealth(11);
+			}
+			
+            // example of setting a specific model
+            // setSprite(new cSpriteQuake(ModelsMD2.Knight));
+            
+            if ( Sprite is cSpriteQuake ) //Don't let the figurines tumble.  
+			{ 
+				AttitudeToMotionLock = false;   
+				Attitude = new cMatrix3( new cVector3( 0.0f, 0.0f, 1.0f ), 
+                    new cVector3( 1.0f, 0.0f, 0.0f ), 
+                    new cVector3( 0.0f, 1.0f, 0.0f ), Position); 
+				/* Orient them so they are facing towards positive Z with heads towards Y. */ 
+			} 
+			Bounciness = 0.0f; //Not 1.0 means it loses a bit of energy with each bounce.
+			setRadius( 1.0f );
+            MinTwitchThresholdSpeed = 4.0f; //Means sprite doesn't switch direction unless it's moving fast 
+			randomizePosition( new cRealBox3( new cVector3( _movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f), 
+				new cVector3( _movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f))); 
+				/* I put them ahead of the player  */ 
+
+                        
+			if ( pownergame != null ) //Then we know we added this to a game so pplayer() is valid 
+				addForce( new cForceObjectSeek( Player, 0.5f ));
+
+            int begf = Framework.randomOb.random(0, 171);
+            int endf = Framework.randomOb.random(0, 171);
+
+            if (begf > endf)
+            {
+                int temp = begf;
+                begf = endf;
+                endf = temp;
+            }
+
+			Sprite.setstate( State.Other, begf, endf, StateType.Repeat );
+
+
+            _wrapflag = cCritter.BOUNCE;
+
+		} 
+
+		
+		public override void update( ACView pactiveview, float dt ) 
+		{ 
+			base.update( pactiveview, dt ); //Always call this first
+			if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
+				delete_me(); //tell the game to remove yourself if you fall up to the hiz.
+        } 
+
+		// do a delete_me if you hit the left end 
+	
+		public override void die() 
+		{ 
+			Player.addHealth( 10 ); 
+			base.die(); 
+		} 
+
+        public override string RuntimeClass
+        {
+            get
+            {
+                return "cCritter3DHealer";
+            }
+        }
+	}
+
+
 	
 	class cCritterTreasure : cCritter 
 	{   // Try jumping through this hoop
@@ -332,6 +463,8 @@ namespace ACFramework
 			_menuflags &= ~ cGame.MENU_BOUNCEWRAP; 
 			_menuflags |= cGame.MENU_HOPPER; //Turn on hopper listener option.
 			_spritetype = cGame.ST_MESHSKIN; 
+			setBorder( 50.0f, 14.0f, 50.0f ); // size of the world
+			//^possible error
 			//opening message box window
 			MessageBox.Show("Welcome to the famous Yoshi Misadventures In this game you will be fighting the mean Macho Chick and his followers to save your friends! Good luck the arrow keys are for movement and the pg up is to jump and the spacebar is to shoot. Good Luck");
 			//options for the game amoun of enemies you will fight in the first room
@@ -378,35 +511,86 @@ namespace ACFramework
 			//First draw a wall with dy height resting on the bottom of the world.
 			float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */ 
-			float height = 0.1f * _border.YSize; 
+			float height = 0.15f * _border.YSize; 
 			float ycenter = -_border.YRadius + height / 2.0f; 
 			float wallthickness = cGame3D.WALLTHICKNESS;
-            cCritterWall pwall = new cCritterWall( 
-				new cVector3( _border.Midx + 2.0f, ycenter, zpos ), 
-				new cVector3( _border.Hix, ycenter, zpos ), 
-				height, //thickness param for wall's dy which goes perpendicular to the 
+     //       cCritterWall pwall = new cCritterWall( 
+	//			new cVector3( _border.Midx + 2.0f, ycenter, zpos ), 
+		//		new cVector3( _border.Hix, ycenter, zpos ), 
+		//		height, //thickness param for wall's dy which goes perpendicular to the 
 					//baseline established by the frist two args, up the screen 
-				wallthickness+22.0f, //height argument for this wall's dz  goes into the screen 
-				this );
-			cSpriteTextureBox pspritebox = 
-				new cSpriteTextureBox( pwall.Skeleton, BitmapRes.Wall3, 16 ); //Sets all sides 
+		//		wallthickness+22.0f, //height argument for this wall's dz  goes into the screen 
+		//		this );
+		//	cSpriteTextureBox pspritebox = 
+		//		new cSpriteTextureBox( pwall.Skeleton, BitmapRes.Wall3, 16 ); //Sets all sides 
 				/* We'll tile our sprites three times along the long sides, and on the
 			short ends, we'll only tile them once, so we reset these two. */
-          pwall.Sprite = pspritebox; 
+      //    pwall.Sprite = pspritebox; 
 		
 		
 			//Then draw a ramp to the top of the wall.  Scoot it over against the right wall.
-			float planckwidth = 9.0f * height; 
-			pwall = new cCritterWall( 
-				new cVector3( _border.Hix -planckwidth / 3.0f, _border.Loy, _border.Hiz - 2.0f), 
-				new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
-				planckwidth+2.0f, //thickness param for wall's dy which is perpenedicualr to the baseline, 
-						//which goes into the screen, so thickness goes to the right 
-				wallthickness+0.25f, //_border.zradius(),  //height argument for wall's dz which goes into the screen 
-				this );
-            cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
-                BitmapRes.Wall3 );
-            pwall.Sprite = stb;
+			float planckwidth = 8.0f * height; 
+
+			cCritterWall pwall1 = new cCritterWall(
+                new cVector3(_border.Midx+50.0f + 0.0f, ycenter, zpos),
+                new cVector3(_border.Hix-30.0f, ycenter, zpos),
+                height, //thickness param for wall's dy which goes perpendicular to the 
+                wallthickness, //height argument for this wall's dz  goes into the screen 
+                this);
+
+			
+         //   cCritterWall pwall2 = new cCritterWall(
+           //     new cVector3(_border.Midx - 2.0f, ycenter, zpos + 0.0f),
+             //   new cVector3(_border.Hix - 32.0f, ycenter, zpos),
+               // height, //thickness param for wall's dy which goes perpendicular to the 
+                //wallthickness, //height argument for this wall's dz  goes into the screen 
+                //this);
+
+          //dont touch this wall
+			  cCritterWall pwall3 = new cCritterWall(
+                new cVector3(_border.Midx -50.0f, ycenter, zpos + 13.0f),
+                new cVector3(_border.Hix - 35.0f, ycenter, zpos - 1.0f),
+                height, //thickness param for wall's dy which goes perpendicular to the 
+                wallthickness, //height argument for this wall's dz  goes into the screen 
+                this);
+
+
+			cSpriteTextureBox pspritebox1 = new cSpriteTextureBox(pwall1.Skeleton, BitmapRes.Wall3, 16); 
+            //cSpriteTextureBox pspritebox2 = new cSpriteTextureBox(pwall2.Skeleton, BitmapRes.Wall3, 16); 
+            cSpriteTextureBox pspritebox3 = new cSpriteTextureBox(pwall3.Skeleton, BitmapRes.Wall3, 16);            
+			//cSpriteTextureBox pspritebox4 = new cSpriteTextureBox(pwall4.Skeleton, BitmapRes.Wall3, 16); 
+          //cSpriteTextureBox pspritebox5 = new cSpriteTextureBox(pwall5.Skeleton, BitmapRes.Wall3, 16); 
+
+            pwall1.Sprite = pspritebox1;
+           // pwall2.Sprite = pspritebox2;
+            pwall3.Sprite = pspritebox3;
+          //  pwall4.Sprite = pspritebox4;
+          //  pwall5.Sprite = pspritebox5;
+          
+
+			//comments out ramp for now
+			//pwall = new cCritterWall( 
+				//new cVector3( _border.Hix -planckwidth / 2.0f, _border.Loy, _border.Hiz - 2.0f), 
+				//new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
+				//planckwidth+2.0f, //thickness param for wall's dy which is perpenedicualr to the baseline, 
+				//which goes into the screen, so thickness goes to the right 
+				//wallthickness+0.25f, //_border.zradius(),  //height argument for wall's dz which goes into the screen 
+				//this );
+         //   cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
+           //     BitmapRes.Wall3, 2 );
+            //pwall.Sprite = stb;
+			//merge from noah that might work in this idk we will check it
+			//float planckwidth = 9.0f * height; 
+			//pwall = new cCritterWall( 
+			//	new cVector3( _border.Hix -planckwidth / 3.0f, _border.Loy, _border.Hiz - 2.0f), 
+			//	new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
+			//	planckwidth+2.0f, //thickness param for wall's dy which is perpenedicualr to the baseline, 
+			//			//which goes into the screen, so thickness goes to the right 
+			//	wallthickness+0.25f, //_border.zradius(),  //height argument for wall's dz which goes into the screen 
+			//	this );
+   //         cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
+   //             BitmapRes.Wall3 );
+   //         pwall.Sprite = stb;
 		
 			cCritterDoor pdwall = new cCritterDoor( 
 				new cVector3( _border.Lox, _border.Loy, _border.Midz ), 
@@ -519,6 +703,8 @@ namespace ACFramework
 			Biota.purgeCritters<cCritter3Dcharacter>();
             for (int i = 0; i < _seedcount; i++) 
 				new cCritter3Dcharacter( this );
+
+			new cCritter3DHealer(this);
             Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f)); 
 				/* We start at hiz and move towards	loz */ 
 		} 
