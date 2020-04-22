@@ -76,7 +76,8 @@ namespace ACFramework
                 Game.Border.Midz)) < 3.0f)
             {
                 warningGiven = true;
-                MessageBox.Show("DON'T GO THROUGH THAT DOOR!!!  DON'T EVEN THINK ABOUT IT!!!");
+                MessageBox.Show("You must have a score of 6 to go through this door and then a score of 20 to go to the next one");
+				
             }
  
         } 
@@ -91,6 +92,11 @@ namespace ACFramework
 	as collide can change the positions. */
             _baseAccessControl = 1;
 			bool collided = base.collide( pcritter );
+
+			//
+			//add sound into here!!! YOSHI HITTING SOMETHING
+
+
             _baseAccessControl = 0;
             if (!collided) 
 				return false;
@@ -258,7 +264,6 @@ namespace ACFramework
             }
 
 			Sprite.setstate( State.Other, begf, endf, StateType.Repeat );
-
 
             _wrapflag = cCritter.BOUNCE;
 
@@ -459,7 +464,24 @@ namespace ACFramework
 			_menuflags |= cGame.MENU_HOPPER; //Turn on hopper listener option.
 			_spritetype = cGame.ST_MESHSKIN; 
 			setBorder( 50.0f, 14.0f, 50.0f ); // size of the world
-		
+			//^possible error
+			//opening message box window
+			MessageBox.Show("Welcome to the famous Yoshi Misadventures In this game you will be fighting the mean Macho Chick and his followers to save your friends! Good luck the arrow keys are for movement and the pg up is to jump and the spacebar is to shoot. Good Luck");
+			//options for the game amoun of enemies you will fight in the first room
+			//Added Dialog box that should 
+			//DialogResult result1 = MessageBox.Show("Yes for hard level no for easy level","Important Question", MessageBoxButtons.YesNo,MessageBoxIcon.Question);
+			
+			
+			setBorder( 64.0f, 16.0f, 64.0f ); // size of the world
+			//if (result1 == DialogResult.Yes){
+			//Score=0;
+			//}
+			//if (result1 == DialogResult.No){
+			//Score = 6;
+			//}
+{
+			//    MessageBox.Show("You answered yes, yes and no.");
+}
 			cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
 			setSkyBox( skeleton );
@@ -473,8 +495,8 @@ namespace ACFramework
 			SkyBox.setSideSolidColor( cRealBox3.LOZ, Color.ForestGreen ); //Far wall 
 			SkyBox.setSideSolidColor( cRealBox3.LOX, Color.ForestGreen ); //left wall 
             SkyBox.setSideSolidColor( cRealBox3.HIX, Color.ForestGreen ); //right wall 
-			SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Wood2 ); //floor 
-			SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Sky ); //ceiling 
+			SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Wood2,16 ); //floor 
+			SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Sky,2 ); //ceiling 
 		
 			WrapFlag = cCritter.BOUNCE; 
 			_seedcount = 5; 
@@ -557,6 +579,18 @@ namespace ACFramework
          //   cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
            //     BitmapRes.Wall3, 2 );
             //pwall.Sprite = stb;
+			//merge from noah that might work in this idk we will check it
+			//float planckwidth = 9.0f * height; 
+			//pwall = new cCritterWall( 
+			//	new cVector3( _border.Hix -planckwidth / 3.0f, _border.Loy, _border.Hiz - 2.0f), 
+			//	new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
+			//	planckwidth+2.0f, //thickness param for wall's dy which is perpenedicualr to the baseline, 
+			//			//which goes into the screen, so thickness goes to the right 
+			//	wallthickness+0.25f, //_border.zradius(),  //height argument for wall's dz which goes into the screen 
+			//	this );
+   //         cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
+   //             BitmapRes.Wall3 );
+   //         pwall.Sprite = stb;
 		
 			cCritterDoor pdwall = new cCritterDoor( 
 				new cVector3( _border.Lox, _border.Loy, _border.Midz ), 
@@ -565,12 +599,16 @@ namespace ACFramework
 			cSpriteTextureBox pspritedoor = 
 				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
 			pdwall.Sprite = pspritedoor;
-
-             
+			
 		} 
 
         public void setRoom1( )
         {
+
+			//Now hear me out guys if I cant get a new room what if i just build a new room on top of that
+
+
+
             Biota.purgeCritters<cCritterWall>();
             Biota.purgeCritters<cCritter3Dcharacter>();
             Biota.purgeCritters<cCritterShape>();
@@ -581,7 +619,7 @@ namespace ACFramework
 	        SkyBox.setAllSidesTexture( BitmapRes.Wood2, 2 );
 	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Wall2 );
 	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Blue );
-	        _seedcount = 0; ; ;
+	        _seedcount = 20; ; ;
 	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
@@ -600,23 +638,65 @@ namespace ACFramework
                 new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); //Sets all sides 
             /* We'll tile our sprites three times along the long sides, and on the
         short ends, we'll only tile them once, so we reset these two. */
-            pwall.Sprite = pspritebox;
-            wentThrough = true;
-            startNewRoom = Age;
-			
-			
 			//MADE DOOR HERE put in room one
 			//------------------------------------------------------------------------------------------------
 			cCritterDoor pdwall = new cCritterDoor( 
 				new cVector3( _border.Lox, _border.Loy, _border.Midz ), 
 				new cVector3( _border.Lox, _border.Midy - 3, _border.Midz ), 
-				0.1f, 2, this ); 
+				0.1f, 15, this ); 
 			cSpriteTextureBox pspritedoor = 
 				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
 			pdwall.Sprite = pspritedoor;
 			//---------------------------------------------------------------------------------------------------
+            pwall.Sprite = pspritebox;
+            wentThrough = true;
+            startNewRoom = Age;
+			
+			
 		}
 		
+		public void setRoom2( )
+        {
+            Biota.purgeCritters<cCritterWall>();
+            Biota.purgeCritters<cCritter3Dcharacter>();
+            Biota.purgeCritters<cCritterShape>();
+            setBorder(80.0f, 15.0f, 50.0f); 
+	        cRealBox3 skeleton = new cRealBox3();
+            skeleton.copy( _border );
+	        setSkyBox(skeleton);
+	        SkyBox.setAllSidesTexture( BitmapRes.Graphics3, 2 );
+	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Wood2,16 );
+	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Red );
+	        _seedcount = 1; ; ;
+	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
+            float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
+			halfway down the hall, but we can offset it if we like. */
+            float height = 3.0f * _border.YSize;
+			//this code makes the wall go up or down
+            float ycenter = -_border.YRadius + height / 2.0f;
+            float wallthickness = cGame3D.WALLTHICKNESS;
+            
+			
+			
+			cCritterWall pwall = new cCritterWall(
+                new cVector3(_border.Midx + 3.0f, ycenter, zpos),
+                new cVector3(_border.Hix+3.0f, ycenter, zpos),
+                height, //thickness param for wall's dy which goes perpendicular to the 
+                //baseline established by the frist two args, up the screen 
+                wallthickness +40.0f, //height argument for this wall's dz  goes into the screen 
+                this);;
+			
+            cSpriteTextureBox pspritebox =
+                new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); //Sets all sides 
+            /* We'll tile our sprites three times along the long sides, and on the
+        short ends, we'll only tile them once, so we reset these two. */
+            pwall.Sprite = pspritebox;
+            wentThrough = true;
+            startNewRoom = Age;
+			
+			
+			
+		}
 		public override void seedCritters() 
 		{
 			Biota.purgeCritters<cCritterBullet>(); 
@@ -690,18 +770,40 @@ namespace ACFramework
 			for ( int i = 0; i < modelstoadd; i++) 
 				new cCritter3Dcharacter( this ); 
 		// (3) Maybe check some other conditions.
-
-            if (wentThrough && (Age - startNewRoom) > 2.0f)
+		int rmcnt =1;
+            if (wentThrough && (Age - startNewRoom) > 1.0f)
             {
-               
+            
                 wentThrough = false;
             }
-
+			
             if (doorcollision == true)
             {
+				if (rmcnt ==1&& Score>=6){
+				rmcnt=rmcnt+1;
                 setRoom1();
                 doorcollision = false;
+
+				}
+				if (rmcnt ==2&& Score>=20){
+				rmcnt=rmcnt+1;
+                setRoom2();
+                doorcollision = false;
+				}
+				if (Score >=30){
+				
+				Framework.snd.play(Sound.Clap); 
+				//Environment.Exit;
+					//Application.Exit;
+					//should be working but it doesnt seem to work
+					//MessageBox.Show("Congratulations You beat Macho Chicken!!!");
+					//obsticles
+				}
+				///////////////////////////////////////
+				
             }
+				
+			
 		} 
 		
 	} 
