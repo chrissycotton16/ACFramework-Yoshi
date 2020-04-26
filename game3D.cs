@@ -129,6 +129,7 @@ namespace ACFramework
 			
 
 				damage( 1 );
+				Player.addScore(1);
 				//Add sound file here for yoshi in tounge spitting
                 //added just need sound file added
 				//Framework.snd.play(Sound.laserFireUSing);
@@ -205,7 +206,7 @@ namespace ACFramework
 					pcritter.clearForcelist();
 					pcritter.addForce(new cForceDrag(50.0f));
 					pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));
-					Player.addScore(1); //doesnt change in increments of one???? changes it dramatically???
+					//Player.addScore(1); //doesnt change in increments of one???? changes it dramatically???
 				}
                      
                 else if(((cCritter3DPlayer)Player).Mode1 == 'W')//double damage
