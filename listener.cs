@@ -447,18 +447,22 @@ namespace ACFramework
             bool pagedown = Framework.Keydev[vk.PageDown];
             bool Q = Framework.Keydev[vk.Q];
             bool W = Framework.Keydev[vk.W];
+            bool E = Framework.Keydev[vk.E];
 
 
             if(Q)
             {
-                //MessageBox.Show("f1 listener");
                 ((cCritter3DPlayer)pcritter).Mode1 = 'Q';
                 return;
             }
             if(W)
             {
-                //MessageBox.Show("f2 listener");
                 ((cCritter3DPlayer)pcritter).Mode1 = 'W';
+                return;
+            }
+            if(E)
+            {
+                ((cCritter3DPlayer)pcritter).Mode1 = 'E';
                 return;
             }
 
