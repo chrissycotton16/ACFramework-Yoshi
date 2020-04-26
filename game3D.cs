@@ -918,54 +918,42 @@ namespace ACFramework
             }
 			
 
-            if (doorcollision == true)
-            {
-				if (rmcnt ==1&& Score>=3){
-					rmcnt=rmcnt+1;
-					setRoom1();
-					doorcollision = false;
-
-				}
-				if (rmcnt ==2 && Score>=5){
-					rmcnt=rmcnt+1;
-					setRoom2();
-					doorcollision = false;
-
-          //  if (doorcollision == true)
-        //{
-				//
-				if (rmcnt ==1&& Score>=3&& doorcollision==true){
+      
+			if (rmcnt ==1&& Score>=3&& doorcollision==true){
 				rmcnt=rmcnt+1;
                 setRoom1();
                 doorcollision = false;
 
-				}
+			}
 				//_____________________________________
-				if (rmcnt ==2&& Score>=5){
+			if (rmcnt ==2&& Score>=5){
 				rmcnt=rmcnt+1;
                 setRoom2();
                 doorcollision = false;
 
-				}
-				if (Score >=10){
+			}
+			if (Score >=10){
 				
-					Framework.snd.play(Sound.Clap); 
+					//Framework.snd.play(Sound.Clap); 
 					//Environment.Exit;
 						//Application.Exit;
 						//should be working but it doesnt seem to work
 						//MessageBox.Show("Congratulations You beat Macho Chicken!!!");
 						//obstacles
-				}
+			}
 				///////////////////////////////////////
 				
             //}
 				
 			
 		} 
-		
-	} 
-	
+	}
 }
+
+		
+	
+	
+
 
 
 
