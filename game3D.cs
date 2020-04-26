@@ -7,6 +7,9 @@ using System.Windows.Forms;
 
 
 
+
+//Kalyn
+
 namespace ACFramework
 { 
 	
@@ -112,8 +115,12 @@ namespace ACFramework
 			} 
 			else 
 			{ 
-				damage( 1 );
-                Framework.snd.play(Sound.Crunch); 
+				if(pcritter.Sprite.ModelState != State.FallForwardDie || pcritter.Sprite.ModelState != State.FallForwardDie)
+				{
+					damage( 1 );
+					Framework.snd.play(Sound.Crunch); 
+				}
+			
 			} 
 			pcritter.die(); 
 			return true; 
@@ -156,12 +163,15 @@ namespace ACFramework
 				Sprite = new cSpriteSphere(0.2f);
 				Sprite.FillColor = Color.Purple;
 			}
-			else//w
+			else if(((cCritter3DPlayer)pshooter).Mode1 == 'W')
 			{
 				Sprite = new cSpriteQuake(ModelsMD2.bunny);
 				Radius = 0.2f;
-				//Sprite = new cSpriteRectangle(0.2f);
-				//Sprite.FillColor = Color.Green;
+			}
+			else //E
+			{
+				Sprite = new cSpriteSphere(0.2f);
+				Sprite.FillColor = Color.Green;
 			}
             // can use setSprite here too
             setRadius(0.1f);
@@ -182,14 +192,20 @@ namespace ACFramework
 					pcritter.clearForcelist();
 					pcritter.addForce(new cForceDrag(50.0f));
 					pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));
+					Player.addScore(1); //doesnt change in increments of one???? changes it dramatically???
 				}
                      
                 else if(((cCritter3DPlayer)Player).Mode1 == 'W')//double damage
                 {
 
-                   //take away twice the amount of health -- how????
-
+                   //take away twice the amount of health from boss -- how????
+				   //add double score for regular chickens
                 }
+				else if(((cCritter3DPlayer)Player).Mode1 == 'E') //shrink ray
+				{
+					//figure out how to kill them after 2 hits
+					pcritter.Radius = 0.9f * pcritter.Radius;
+				}
                
                 return true;
             }
