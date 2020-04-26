@@ -34,6 +34,10 @@ namespace ACFramework
         public static readonly int Sky = 6;
         public static readonly int Wood2 = 7;
         public static readonly int Concrete = 8;
+        public static readonly int YGround = 9;
+        public static readonly int Y2Ground = 10;
+        public static readonly int Wall4 = 11;
+        public static readonly int Wall42 = 12;
         
 
         private static readonly string[] Bitmap = new string[] {
@@ -45,7 +49,11 @@ namespace ACFramework
                 "graphics3.bmp",
                 "sky.bmp",
                 "wood2.bmp",
-                "concrete1.bmp"
+                "concrete1.bmp",
+                "Game Found2.bmp",
+                "Game ground.bmp",
+                "Wall texture Good.bmp",
+                "Wall texture2.bmp"
             };
 
         public BitmapRes()
@@ -78,15 +86,17 @@ namespace ACFramework
         private int nrequests = 0;
         private object locker = new object();
         private bool nosound = false;
-
+        
         public static readonly int Pop = 0;
         public static readonly int Clap = 1;
         public static readonly int Crunch = 2;
         public static readonly int Goopy = 3;
         public static readonly int LaserFire = 4;
         public static readonly int Hallelujah = 5;
-        public static readonly int Spit =6;
-        public static readonly int Yelp =7;
+        public static readonly int harp = 6;
+        public static readonly int laserFireUSing= 7;
+        public static readonly int Bangbang = 8;
+        public static readonly int muzzleload = 9;
 
         private static readonly string[] sound = new string[] {
                 "pop.wav",
@@ -94,9 +104,12 @@ namespace ACFramework
                 "crunch.wav",
                 "goopy.wav",
                 "laserfire3.wav",
-                "hallelujah.wav"
-            //Spit noise needs added.wav file Noah has it 
-            //Yelp noise needs added.wav file Noah has it 
+                "hallelujah.wav",
+                "harp.wav",
+                "laserfire1.wav",
+                "singlegunshot.wav",
+                "pop.wav",
+            
             };
 
         public Sound()
