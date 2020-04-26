@@ -110,17 +110,30 @@ namespace ACFramework
 	 with a Treasure is different, but we let the Treasure contol that collision. */ 
 			if ( playerhigherthancritter ) 
 			{
-                Framework.snd.play(Sound.Goopy); 
+				// add sound that will make a yoshi noise that will let yoshi make a wierd crushing noises 
+				//Framework.snd.play(Sound.Stomp);
+                //Framework.snd.play(Sound.Goopy); 
+				Framework.snd.play(Sound.Bangbang);
 				addScore( 10 ); 
+				//adding the coin noise so that when you land it will add a coin noise
+				//Framework.snd.play(Sound.Coin)
 			} 
 			else 
 			{ 
+
 				if(pcritter.Sprite.ModelState != State.FallForwardDie || pcritter.Sprite.ModelState != State.FallForwardDie)
 				{
 					damage( 1 );
 					Framework.snd.play(Sound.Crunch); 
 				}
 			
+
+				damage( 1 );
+				//Add sound file here for yoshi in tounge spitting
+                //added just need sound file added
+				//Framework.snd.play(Sound.laserFireUSing);
+				Framework.snd.play(Sound.Pop); 
+
 			} 
 			pcritter.die(); 
 			return true; 
@@ -128,7 +141,7 @@ namespace ACFramework
 
         public override cCritterBullet shoot()
         {
-            Framework.snd.play(Sound.LaserFire);
+            //Framework.snd.play(Sound.Spit);
             return base.shoot();
         }
 
@@ -607,13 +620,21 @@ namespace ACFramework
 		I am flying into the screen from HIZ towards LOZ, and
 		LOX below and HIX above and
 		LOY on the right and HIY on the left. */ 
-			SkyBox.setSideSolidColor( cRealBox3.HIZ, Color.ForestGreen ); //Make the near HIZ transparent 
-			SkyBox.setSideSolidColor( cRealBox3.LOZ, Color.ForestGreen ); //Far wall 
-			SkyBox.setSideSolidColor( cRealBox3.LOX, Color.ForestGreen ); //left wall 
-            SkyBox.setSideSolidColor( cRealBox3.HIX, Color.ForestGreen ); //right wall 
+			SkyBox.setSideTexture( cRealBox3.HIZ, BitmapRes.Wall4 ); //back
+			SkyBox.setSideTexture( cRealBox3.LOZ, BitmapRes.Wall4 ); //Far
+			SkyBox.setSideTexture( cRealBox3.HIX, BitmapRes.Wall42 ); //Left
+			SkyBox.setSideTexture( cRealBox3.LOX, BitmapRes.Wall42 ); //Right
+			
+			
+			//SkyBox.setSideSolidColor( cRealBox3.HIZ, Color.ForestGreen ); //Make the near HIZ transparent 
+			//SkyBox.setSideSolidColor( cRealBox3.LOZ, Color.ForestGreen ); //Far wall 
+			//SkyBox.setSideSolidColor( cRealBox3.LOX, Color.ForestGreen ); //left wall 
+            //SkyBox.setSideSolidColor( cRealBox3.HIX, Color.ForestGreen ); //right wall 
 			SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Wood2,16 ); //floor 
 			SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Sky,2 ); //ceiling 
-		
+			
+
+
 			WrapFlag = cCritter.BOUNCE; 
 			_seedcount = 5; 
 			setPlayer( new cCritter3DPlayer( this )); 
@@ -732,8 +753,10 @@ namespace ACFramework
 	        cRealBox3 skeleton = new cRealBox3();
             skeleton.copy( _border );
 	        setSkyBox(skeleton);
-	        SkyBox.setAllSidesTexture( BitmapRes.Wood2, 2 );
-	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Wall2 );
+
+
+	        SkyBox.setAllSidesTexture( BitmapRes.Y2Ground, 2 );
+	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.YGround );
 	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Blue );
 	        _seedcount = 20;
 	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
@@ -801,7 +824,7 @@ namespace ACFramework
                 new cVector3(_border.Hix+3.0f, ycenter, zpos),
                 height, //thickness param for wall's dy which goes perpendicular to the 
                 //baseline established by the frist two args, up the screen 
-                wallthickness +40.0f, //height argument for this wall's dz  goes into the screen 
+                wallthickness + 80.0f, //height argument for this wall's dz  goes into the screen 
                 this);;
 			
             cSpriteTextureBox pspritebox =
@@ -894,6 +917,7 @@ namespace ACFramework
                 wentThrough = false;
             }
 			
+
             if (doorcollision == true)
             {
 				if (rmcnt ==1&& Score>=3){
@@ -906,6 +930,22 @@ namespace ACFramework
 					rmcnt=rmcnt+1;
 					setRoom2();
 					doorcollision = false;
+
+          //  if (doorcollision == true)
+        //{
+				//
+				if (rmcnt ==1&& Score>=3&& doorcollision==true){
+				rmcnt=rmcnt+1;
+                setRoom1();
+                doorcollision = false;
+
+				}
+				//_____________________________________
+				if (rmcnt ==2&& Score>=5){
+				rmcnt=rmcnt+1;
+                setRoom2();
+                doorcollision = false;
+
 				}
 				if (Score >=10){
 				
@@ -918,7 +958,7 @@ namespace ACFramework
 				}
 				///////////////////////////////////////
 				
-            }
+            //}
 				
 			
 		} 
@@ -926,3 +966,14 @@ namespace ACFramework
 	} 
 	
 }
+
+
+
+
+// MOVE WALL ADD SOUND FILES
+// move wall is the next objective
+// critter boss will be just like the healer class
+// so chrissy can take care of that 
+// move the score up as you continue into the game
+
+	//CHECK RESPAWN PROBLEM IN ROOM 2 AND 3
