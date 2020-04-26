@@ -3,6 +3,12 @@ using System.Drawing;
 using System.Windows.Forms;
 
 // mod: setRoom1 doesn't repeat over and over again
+//chrissy
+
+
+
+
+//Kalyn
 
 namespace ACFramework
 { 
@@ -114,11 +120,20 @@ namespace ACFramework
 			} 
 			else 
 			{ 
+
+				if(pcritter.Sprite.ModelState != State.FallForwardDie || pcritter.Sprite.ModelState != State.FallForwardDie)
+				{
+					damage( 1 );
+					Framework.snd.play(Sound.Crunch); 
+				}
+			
+
 				damage( 1 );
 				//Add sound file here for yoshi in tounge spitting
                 //added just need sound file added
 				//Framework.snd.play(Sound.laserFireUSing);
 				Framework.snd.play(Sound.Pop); 
+
 			} 
 			pcritter.die(); 
 			return true; 
@@ -161,12 +176,15 @@ namespace ACFramework
 				Sprite = new cSpriteSphere(0.2f);
 				Sprite.FillColor = Color.Purple;
 			}
-			else//w
+			else if(((cCritter3DPlayer)pshooter).Mode1 == 'W')
 			{
 				Sprite = new cSpriteQuake(ModelsMD2.bunny);
 				Radius = 0.2f;
-				//Sprite = new cSpriteRectangle(0.2f);
-				//Sprite.FillColor = Color.Green;
+			}
+			else //E
+			{
+				Sprite = new cSpriteSphere(0.2f);
+				Sprite.FillColor = Color.Green;
 			}
             // can use setSprite here too
             setRadius(0.1f);
@@ -187,14 +205,20 @@ namespace ACFramework
 					pcritter.clearForcelist();
 					pcritter.addForce(new cForceDrag(50.0f));
 					pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));
+					Player.addScore(1); //doesnt change in increments of one???? changes it dramatically???
 				}
                      
                 else if(((cCritter3DPlayer)Player).Mode1 == 'W')//double damage
                 {
 
-                   //take away twice the amount of health -- how????
-
+                   //take away twice the amount of health from boss -- how????
+				   //add double score for regular chickens
                 }
+				else if(((cCritter3DPlayer)Player).Mode1 == 'E') //shrink ray
+				{
+					//figure out how to kill them after 2 hits
+					pcritter.Radius = 0.9f * pcritter.Radius;
+				}
                
                 return true;
             }
@@ -303,6 +327,99 @@ namespace ACFramework
         }
 	} 
 
+	class cCritter3DBoss: cCritter3Dcharacter{
+		
+		public cCritter3DBoss( cGame pownergame )  : base( pownergame ) 
+		{
+			setRadius( cGame3D.BOSSRADIUS); //Default cCritter.PLAYERRADIUS is 0.4.  
+
+            addForce(new cForceGravity(25.0f, new cVector3( 0.0f, -1, 0.00f ))); 
+			addForce( new cForceDrag( 20.0f ) );  // default friction strength 0.5 
+			Density = 2.0f; 
+			MaxSpeed = 30.0f;
+            if (pownergame != null) //Just to be safe.
+                Sprite = new cSpriteQuake(Framework.models.selectRandomCritter());
+            
+			//draw critters to player to attack (tutorial 2)
+			if(distanceTo(Player) < 5){
+				Sprite.ModelState = State.CrouchCrawl;
+				clearForcelist();
+				addForce(new cForceDrag(5.0f));
+				addForce(new cForceGravity(25.0f, new cVector3(0.0f,-1f,0.00f)));
+			}
+			else if(distanceTo(Player) > 5){
+				clearForcelist();
+				addForce(new cForceGravity(25.0f, new cVector3(0.0f, -1f, 0.00f)));
+				addForce(new cForceDrag(0.0f));
+				addForce(new cForceObjectSeek(Player, 0.1f));
+				Sprite.ModelState = State.Run;
+			}
+
+            // example of setting a specific model
+            // setSprite(new cSpriteQuake(ModelsMD2.Knight));
+            
+            if ( Sprite is cSpriteQuake ) //Don't let the figurines tumble.  
+			{ 
+				AttitudeToMotionLock = false;   
+				Attitude = new cMatrix3( new cVector3( 0.0f, 0.0f, 1.0f ), 
+                    new cVector3( 1.0f, 0.0f, 0.0f ), 
+                    new cVector3( 0.0f, 1.0f, 0.0f ), Position); 
+				/* Orient them so they are facing towards positive Z with heads towards Y. */ 
+			} 
+			Bounciness = 0.0f; //Not 1.0 means it loses a bit of energy with each bounce.
+			setRadius( 1.0f );
+            MinTwitchThresholdSpeed = 4.0f; //Means sprite doesn't switch direction unless it's moving fast 
+			randomizePosition( new cRealBox3( new cVector3( _movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f), 
+				new cVector3( _movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f))); 
+				/* I put them ahead of the player  */ 
+			randomizeVelocity( 0.0f, 30.0f, false ); 
+
+                        
+			if ( pownergame != null ) //Then we know we added this to a game so pplayer() is valid 
+				addForce( new cForceObjectSeek( Player, 0.5f ));
+
+            int begf = Framework.randomOb.random(0, 171);
+            int endf = Framework.randomOb.random(0, 171);
+
+            if (begf > endf)
+            {
+                int temp = begf;
+                begf = endf;
+                endf = temp;
+            }
+
+			Sprite.setstate( State.Other, begf, endf, StateType.Repeat );
+
+            _wrapflag = cCritter.BOUNCE;
+
+		} 
+
+		
+		public override void update( ACView pactiveview, float dt ) 
+		{ 
+			base.update( pactiveview, dt ); //Always call this first
+			rotateAttitude(Tangent.rotationAngle(AttitudeTangent));
+			if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
+				delete_me(); //tell the game to remove yourself if you fall up to the hiz.
+        } 
+
+		// do a delete_me if you hit the left end 
+	
+		public override void die() 
+		{ 
+			Player.addScore( Value ); 
+			base.die(); 
+		} 
+
+        public override string RuntimeClass
+        {
+            get
+            {
+                return "cCritter3Dcharacter";
+            }
+        }
+	}
+
 	class cCritter3DHealer: cCritter3Dcharacter{
 			
         public cCritter3DHealer( cGame pownergame ) 
@@ -390,7 +507,7 @@ namespace ACFramework
 
 
 	
-	class cCritterTreasure : cCritter 
+	class cCritterTreasure: cCritter 
 	{   // Try jumping through this hoop
 		
 		public cCritterTreasure( cGame pownergame ) : 
@@ -458,6 +575,7 @@ namespace ACFramework
 		public static readonly float TREASURERADIUS = 1.2f; 
 		public static readonly float WALLTHICKNESS = 0.5f; 
 		public static readonly float PLAYERRADIUS = 0.4f; 
+		public static readonly float BOSSRADIUS = 0.9f;
 		public static readonly float MAXPLAYERSPEED = 30.0f; 
 		private cCritterTreasure _ptreasure;
         private cCritterShape shape;
@@ -473,8 +591,11 @@ namespace ACFramework
 			_spritetype = cGame.ST_MESHSKIN; 
 			setBorder( 50.0f, 14.0f, 50.0f ); // size of the world
 			//^possible error
-			//opening message box window
-			MessageBox.Show("Welcome to the famous Yoshi Misadventures In this game you will be fighting the mean Macho Chick and his followers to save your friends! Good luck the arrow keys are for movement and the pg up is to jump and the spacebar is to shoot. Good Luck");
+			
+
+
+
+
 			//options for the game amoun of enemies you will fight in the first room
 			//Added Dialog box that should 
 			//DialogResult result1 = MessageBox.Show("Yes for hard level no for easy level","Important Question", MessageBoxButtons.YesNo,MessageBoxIcon.Question);
@@ -517,7 +638,7 @@ namespace ACFramework
 			WrapFlag = cCritter.BOUNCE; 
 			_seedcount = 5; 
 			setPlayer( new cCritter3DPlayer( this )); 
-			_ptreasure = new cCritterTreasure( this );
+			//_ptreasure = new cCritterTreasure( this );
             shape = new cCritterShape(this);
             shape.moveTo(new cVector3( Border.Midx, Border.Hiy, Border.Midz ));
 
@@ -637,7 +758,7 @@ namespace ACFramework
 	        SkyBox.setAllSidesTexture( BitmapRes.Y2Ground, 2 );
 	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.YGround );
 	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Blue );
-	        _seedcount = 20; ; ;
+	        _seedcount = 20;
 	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
@@ -670,7 +791,6 @@ namespace ACFramework
             wentThrough = true;
             startNewRoom = Age;
 			
-			
 		}
 		
 		public void setRoom2( )
@@ -685,7 +805,10 @@ namespace ACFramework
 	        SkyBox.setAllSidesTexture( BitmapRes.Graphics3, 2 );
 	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Wood2,16 );
 	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Red );
-	        _seedcount = 1; ; ;
+	        //create boss here
+			//add healer here too
+			_seedcount = 1;
+
 	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
@@ -712,8 +835,6 @@ namespace ACFramework
             wentThrough = true;
             startNewRoom = Age;
 			
-			
-			
 		}
 		public override void seedCritters() 
 		{
@@ -723,6 +844,7 @@ namespace ACFramework
 				new cCritter3Dcharacter( this );
 
 			new cCritter3DHealer(this);
+			new cCritter3DBoss(this);
             Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f)); 
 				/* We start at hiz and move towards	loz */ 
 		} 
@@ -795,6 +917,20 @@ namespace ACFramework
                 wentThrough = false;
             }
 			
+
+            if (doorcollision == true)
+            {
+				if (rmcnt ==1&& Score>=3){
+					rmcnt=rmcnt+1;
+					setRoom1();
+					doorcollision = false;
+
+				}
+				if (rmcnt ==2 && Score>=5){
+					rmcnt=rmcnt+1;
+					setRoom2();
+					doorcollision = false;
+
           //  if (doorcollision == true)
         //{
 				//
@@ -809,15 +945,16 @@ namespace ACFramework
 				rmcnt=rmcnt+1;
                 setRoom2();
                 doorcollision = false;
+
 				}
-				if (Score >=30){
+				if (Score >=10){
 				
-				Framework.snd.play(Sound.Clap); 
-				//Environment.Exit;
-					//Application.Exit;
-					//should be working but it doesnt seem to work
-					//MessageBox.Show("Congratulations You beat Macho Chicken!!!");
-					//obsticles
+					Framework.snd.play(Sound.Clap); 
+					//Environment.Exit;
+						//Application.Exit;
+						//should be working but it doesnt seem to work
+						//MessageBox.Show("Congratulations You beat Macho Chicken!!!");
+						//obstacles
 				}
 				///////////////////////////////////////
 				

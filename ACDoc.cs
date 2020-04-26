@@ -28,7 +28,20 @@ namespace ACFramework
             bool didareset = false;
             if (_pgame.NewGame)
             {
-                MessageBox.Show("PRESS ENTER\nTo Start Game.");
+               //opening message box window
+			 MessageBox.Show("Welcome to Yoshi's Misadventures! \n " +
+				 "\nIn this game, Yoshi must defeat all the evil chickens and their Mega-Chicken boss! " +
+				 "\nHere is how to play: " +
+                 "\n\t1. Use the arrow keys to navigate" +
+                 "\n\t2. Use the page up button to jump" +
+                 "\n\t3. Use the spacebar to shoot bullets at the evil Chickens" +
+                 "\n\t4. Press W to use the double damage bullet" +
+                 "\n\t5. Press Q to get back to the normal bullet" +
+                 "\n\t6. Be careful to not shoot Squirtle! Run into him to heal!" +
+                 "\n\t7. Defeat the Boss by using the shrink ray bullets by pressing E"
+                 );
+
+
                 RESTART = true;
                 _pgame.start();
                 didareset = true;

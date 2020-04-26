@@ -370,7 +370,7 @@ namespace ACFramework
         /// <returns></returns>
         //public override cCritterBullet Create()
         //{
-          //  return new cCritterBulletSilverDouble();
+            //return new cCritterBulletSilverDouble();
         //}
 
 		//override initialize???
@@ -382,7 +382,7 @@ namespace ACFramework
 		//{
 			//get
 			//{
-              //  return "cCritterBulletSilverDouble";
+                //return "cCritterBulletSilverDouble";
             //}
 		//}
 	
