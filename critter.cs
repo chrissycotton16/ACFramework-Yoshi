@@ -412,10 +412,10 @@ namespace ACFramework
         { 
             int oldscore = _score;
             _score += scorechange;
-            //if (_newlevelscorestep == 0)
-                //return;
-           // if (oldscore / _newlevelscorestep < _score / _newlevelscorestep) //int division. Check old level < new level.  
-                //_health += _newlevelreward;
+            if (_newlevelscorestep == 0)
+                return;
+            if (oldscore / _newlevelscorestep < _score / _newlevelscorestep){} //int division. Check old level < new level.  
+              //  _health += _newlevelreward;
         }
 
         /// <summary>
