@@ -314,7 +314,7 @@ namespace ACFramework
 	
 		public override void die() 
 		{ 
-			Player.addScore( Value ); 
+			//Player.addScore( Value ); 
 			base.die(); 
 		} 
 
@@ -492,7 +492,7 @@ namespace ACFramework
 	
 		public override void die() 
 		{ 
-			Player.addHealth( 10 ); 
+			Player.addHealth( 25 ); 
 			base.die(); 
 		} 
 
@@ -577,7 +577,7 @@ namespace ACFramework
 		public static readonly float PLAYERRADIUS = 0.4f; 
 		public static readonly float BOSSRADIUS = 0.9f;
 		public static readonly float MAXPLAYERSPEED = 30.0f; 
-		private cCritterTreasure _ptreasure;
+		//private cCritterTreasure _ptreasure;
         private cCritterShape shape;
         private bool doorcollision;
         private bool wentThrough = false;
@@ -590,10 +590,6 @@ namespace ACFramework
 			_menuflags |= cGame.MENU_HOPPER; //Turn on hopper listener option.
 			_spritetype = cGame.ST_MESHSKIN; 
 			setBorder( 50.0f, 14.0f, 50.0f ); // size of the world
-			//^possible error
-			
-
-
 
 
 			//options for the game amoun of enemies you will fight in the first room
