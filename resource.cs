@@ -99,16 +99,16 @@ namespace ACFramework
         public static readonly int muzzleload = 9;
 
         private static readonly string[] sound = new string[] {
-                "pop.wav",
-                "clap.wav",
-                "crunch.wav",
-                "goopy.wav",
-                "laserfire3.wav",
+                "metalclank.wav",
+                "pipebang.wav",// first bullet
+                "laserfire2.wav",//third bullet
+                "shrink.wav",//shrink ray
+                "thunder.wav",
                 "hallelujah.wav",
                 "harp.wav",
                 "laserfire1.wav",
                 "singlegunshot.wav",
-                "pop.wav",
+                "pop.wav"
             
             };
 

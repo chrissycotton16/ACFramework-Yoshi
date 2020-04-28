@@ -121,14 +121,12 @@ namespace ACFramework
 			else 
 			{ 
 
-				if(pcritter.Sprite.ModelState != State.FallForwardDie || pcritter.Sprite.ModelState != State.FallForwardDie)
+				if(pcritter.Sprite.ModelState != State.FallForwardDie && pcritter.Sprite.ModelState != State.FallbackDie)
 				{
 					damage( 1 );
-					//Framework.snd.play(Sound.Crunch); 
+					Framework.snd.play(Sound.LaserFire); 
 				}
 			
-
-				damage( 1 );
 				//Add sound file here for yoshi in tounge spitting
                 //added just need sound file added
 				//Framework.snd.play(Sound.laserFireUSing);
@@ -175,14 +173,17 @@ namespace ACFramework
 			{
 				Sprite = new cSpriteSphere(0.2f);
 				Sprite.FillColor = Color.Purple;
+				Framework.snd.play(Sound.Crunch);
 			}
 			else if(((cCritter3DPlayer)pshooter).Mode1 == 'W')
 			{
+				Framework.snd.play(Sound.Clap);
 				Sprite = new cSpriteQuake(ModelsMD2.bunny);
 				Radius = 0.2f;
 			}
 			else //E
 			{
+				Framework.snd.play(Sound.Goopy);
 				Sprite = new cSpriteSphere(0.2f);
 				Sprite.FillColor = Color.Green;
 			}
@@ -194,37 +195,66 @@ namespace ACFramework
          {
             if(isTarget(pcritter) && touch(pcritter))
             {
-                if (((cCritter3DPlayer)Player).Mode1 == 'Q')
+                if (((cCritter3DPlayer)Player).Mode1 == 'Q') //1 point
 				{
 
+					
 					Random rnd = new Random();
 					int randomDeath = rnd.Next (1, 3);
+					//pcritter.Radius = originalRadius;
 					if(randomDeath == 1)
+					{
 						pcritter.Sprite.ModelState = State.FallbackDie;
+					}
 					if(randomDeath == 2)
+					{
 						pcritter.Sprite.ModelState = State.FallForwardDie;
+					}
 					pcritter.clearForcelist();
 					pcritter.addForce(new cForceDrag(50.0f));
 					pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));
-					Player.addScore(1); //doesnt change in increments of one???? changes it dramatically???
+					pcritter.Radius = 0;
+					Player.addScore(1);
 				}
                      
-                else if(((cCritter3DPlayer)Player).Mode1 == 'W')//double damage
+                else if(((cCritter3DPlayer)Player).Mode1 == 'W')//double damage - 3 points
                 {
 
                    //take away twice the amount of health from boss -- how????
 				   //add double score for regular chickens
+				   Player.addScore(3);
+
                 }
-				else if(((cCritter3DPlayer)Player).Mode1 == 'E') //shrink ray
+				else if(((cCritter3DPlayer)Player).Mode1 == 'E') //shrink ray - 2 points
 				{
 					//figure out how to kill them after 2 hits
-					pcritter.Radius = 0.9f * pcritter.Radius;
+					if(pcritter.Radius < 0.2)
+					{
+						/*probably change to just die, not state change
+						pcritter.Sprite.ModelState = State.FallbackDie;
+						pcritter.clearForcelist();
+						pcritter.addForce(new cForceDrag(50.0f));
+						pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));*/
+						//add more score for killing
+						pcritter.Radius = 0;
+						Player.addScore(2);
+					}
+						
+					else
+					{
+						pcritter.Radius = 0.9f * pcritter.Radius;
+						Player.addScore(2); //same touch/radius issue as Q
+					}
+						
+					
 				}
                
                 return true;
             }
             return false;
         }
+
+
 
         public override string RuntimeClass
         {
