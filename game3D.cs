@@ -12,7 +12,6 @@ using System.Windows.Forms;
 
 namespace ACFramework
 { 
-	
 	class cCritterDoor : cCritterWall 
 	{
 
@@ -108,6 +107,7 @@ namespace ACFramework
 				return false;
 		/* If you're here, you collided.  We'll treat all the guys the same -- the collision
 	 with a Treasure is different, but we let the Treasure contol that collision. */ 
+			
 			if ( playerhigherthancritter ) 
 			{
 				// add sound that will make a yoshi noise that will let yoshi make a wierd crushing noises 
@@ -121,15 +121,12 @@ namespace ACFramework
 			else 
 			{ 
 
-				if(pcritter.Sprite.ModelState != State.FallForwardDie || pcritter.Sprite.ModelState != State.FallbackDie)
+				if(pcritter.Sprite.ModelState != State.FallForwardDie && pcritter.Sprite.ModelState != State.FallbackDie)
 				{
 					damage( 1 );
 					Framework.snd.play(Sound.LaserFire); 
 				}
 			
-
-				damage( 1 );
-				Player.addScore(1);
 				//Add sound file here for yoshi in tounge spitting
                 //added just need sound file added
 				//Framework.snd.play(Sound.laserFireUSing);
@@ -198,36 +195,66 @@ namespace ACFramework
          {
             if(isTarget(pcritter) && touch(pcritter))
             {
-                if (((cCritter3DPlayer)Player).Mode1 == 'Q')
+                if (((cCritter3DPlayer)Player).Mode1 == 'Q') //1 point
 				{
+
+					
 					Random rnd = new Random();
 					int randomDeath = rnd.Next (1, 3);
+					//pcritter.Radius = originalRadius;
 					if(randomDeath == 1)
+					{
 						pcritter.Sprite.ModelState = State.FallbackDie;
+					}
 					if(randomDeath == 2)
+					{
 						pcritter.Sprite.ModelState = State.FallForwardDie;
+					}
 					pcritter.clearForcelist();
 					pcritter.addForce(new cForceDrag(50.0f));
 					pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));
-					//Player.addScore(1); //doesnt change in increments of one???? changes it dramatically???
+					pcritter.Radius = 0;
+					Player.addScore(1);
 				}
                      
-                else if(((cCritter3DPlayer)Player).Mode1 == 'W')//double damage
+                else if(((cCritter3DPlayer)Player).Mode1 == 'W')//double damage - 3 points
                 {
 
                    //take away twice the amount of health from boss -- how????
 				   //add double score for regular chickens
+				   Player.addScore(3);
+
                 }
-				else if(((cCritter3DPlayer)Player).Mode1 == 'E') //shrink ray
+				else if(((cCritter3DPlayer)Player).Mode1 == 'E') //shrink ray - 2 points
 				{
 					//figure out how to kill them after 2 hits
-					pcritter.Radius = 0.9f * pcritter.Radius;
+					if(pcritter.Radius < 0.2)
+					{
+						/*probably change to just die, not state change
+						pcritter.Sprite.ModelState = State.FallbackDie;
+						pcritter.clearForcelist();
+						pcritter.addForce(new cForceDrag(50.0f));
+						pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));*/
+						//add more score for killing
+						pcritter.Radius = 0;
+						Player.addScore(2);
+					}
+						
+					else
+					{
+						pcritter.Radius = 0.9f * pcritter.Radius;
+						Player.addScore(2); //same touch/radius issue as Q
+					}
+						
+					
 				}
                
                 return true;
             }
             return false;
         }
+
+
 
         public override string RuntimeClass
         {
@@ -238,36 +265,23 @@ namespace ACFramework
         }
 	} 
 	
+
 	class cCritter3Dcharacter : cCritter  
 	{ 
-		
+		public bool alive = true;
+
+	    public bool Alive{ get => alive; set => alive = value;}
+
+
         public cCritter3Dcharacter( cGame pownergame ) 
             : base( pownergame ) 
 		{
-            addForce(new cForceGravity(25.0f, new cVector3( 0.0f, -1, 0.00f ))); 
-			addForce( new cForceDrag( 20.0f ) );  // default friction strength 0.5 
+            addForce(new cForceGravity(25.0f, new cVector3(0.0f, -1, 0.00f)));
+            addForce(new cForceDrag(0.5f));  // default friction strength 0.5 
 			Density = 2.0f; 
 			MaxSpeed = 30.0f;
             if (pownergame != null) //Just to be safe.
                 Sprite = new cSpriteQuake(Framework.models.selectRandomCritter());
-            
-			//draw critters to player to attack (tutorial 2)
-			if(distanceTo(Player) < 5){
-				Sprite.ModelState = State.CrouchCrawl;
-				clearForcelist();
-				addForce(new cForceDrag(5.0f));
-				addForce(new cForceGravity(25.0f, new cVector3(0.0f,-1f,0.00f)));
-			}
-			else if(distanceTo(Player) > 5){
-				clearForcelist();
-				addForce(new cForceGravity(25.0f, new cVector3(0.0f, -1f, 0.00f)));
-				addForce(new cForceDrag(0.0f));
-				addForce(new cForceObjectSeek(Player, 0.1f));
-				Sprite.ModelState = State.Run;
-			}
-
-            // example of setting a specific model
-            // setSprite(new cSpriteQuake(ModelsMD2.Knight));
             
             if ( Sprite is cSpriteQuake ) //Don't let the figurines tumble.  
 			{ 
@@ -280,15 +294,17 @@ namespace ACFramework
 			Bounciness = 0.0f; //Not 1.0 means it loses a bit of energy with each bounce.
 			setRadius( 1.0f );
             MinTwitchThresholdSpeed = 4.0f; //Means sprite doesn't switch direction unless it's moving fast 
-			randomizePosition( new cRealBox3( new cVector3( _movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f), 
-				new cVector3( _movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f))); 
+		
+			randomizePosition(new cRealBox3(new cVector3(_movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f),
+                new cVector3(_movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f)));
 				/* I put them ahead of the player  */ 
-			randomizeVelocity( 0.0f, 30.0f, false ); 
+			//randomizeVelocity( 0.0f, 30.0f, false ); 
 
                         
 			if ( pownergame != null ) //Then we know we added this to a game so pplayer() is valid 
-				addForce( new cForceObjectSeek( Player, 0.5f ));
+				addForce( new cForceObjectSeek( Player, 1.0f ));
 
+			
             int begf = Framework.randomOb.random(0, 171);
             int endf = Framework.randomOb.random(0, 171);
 
@@ -308,18 +324,52 @@ namespace ACFramework
 		
 		public override void update( ACView pactiveview, float dt ) 
 		{ 
+			
+
 			base.update( pactiveview, dt ); //Always call this first
 			rotateAttitude(Tangent.rotationAngle(AttitudeTangent));
+			
+			if(alive){
+				//draw critters to player to attack (tutorial 2)
+				if(distanceTo(Player) >=10){
+					clearForcelist();
+					Sprite.ModelState = State.Idle;
+				//	addForce(new cForceDrag(0.0f));
+				//	addForce(new cForceGravity(25.0f, new cVector3(0.0f,-1f,0.00f)));
+				}
+				else if(distanceTo(Player) <  10){
+					clearForcelist();
+					addForce(new cForceGravity(25.0f, new cVector3(0.0f, -1f, 0.00f)));
+					addForce(new cForceDrag(0.0f));
+					addForce(new cForceObjectSeek(Player, 0.5f));
+					if(distanceTo(Player) > 8)
+					{
+						Sprite.ModelState = State.Crouch;
+					}
+					else
+					{
+						Sprite.ModelState = State.Run;
+					}
+				}
+			}
+			
+		
+
 			if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
 				delete_me(); //tell the game to remove yourself if you fall up to the hiz.
-        } 
+        }
 
-		// do a delete_me if you hit the left end 
-	
-		public override void die() 
+        // do a delete_me if you hit the left end 
+
+       
+
+        public override void die() 
 		{ 
-			Player.addScore( Value ); 
-			base.die(); 
+			//Player.addScore( Value ); 
+			alive = false;
+			//MessageBox.Show("in die");
+		
+			base.die();
 		} 
 
         public override string RuntimeClass
@@ -335,8 +385,6 @@ namespace ACFramework
 		
 		public cCritter3DBoss( cGame pownergame )  : base( pownergame ) 
 		{
-			setRadius( cGame3D.BOSSRADIUS); //Default cCritter.PLAYERRADIUS is 0.4.  
-
             addForce(new cForceGravity(25.0f, new cVector3( 0.0f, -1, 0.00f ))); 
 			addForce( new cForceDrag( 20.0f ) );  // default friction strength 0.5 
 			Density = 2.0f; 
@@ -345,13 +393,8 @@ namespace ACFramework
                 Sprite = new cSpriteQuake(Framework.models.selectRandomCritter());
             
 			//draw critters to player to attack (tutorial 2)
-			if(distanceTo(Player) < 5){
-				Sprite.ModelState = State.CrouchCrawl;
-				clearForcelist();
-				addForce(new cForceDrag(5.0f));
-				addForce(new cForceGravity(25.0f, new cVector3(0.0f,-1f,0.00f)));
-			}
-			else if(distanceTo(Player) > 5){
+		
+			if(distanceTo(Player) < 1){
 				clearForcelist();
 				addForce(new cForceGravity(25.0f, new cVector3(0.0f, -1f, 0.00f)));
 				addForce(new cForceDrag(0.0f));
@@ -371,7 +414,7 @@ namespace ACFramework
 				/* Orient them so they are facing towards positive Z with heads towards Y. */ 
 			} 
 			Bounciness = 0.0f; //Not 1.0 means it loses a bit of energy with each bounce.
-			setRadius( 1.0f );
+			setRadius( 5.0f );
             MinTwitchThresholdSpeed = 4.0f; //Means sprite doesn't switch direction unless it's moving fast 
 			randomizePosition( new cRealBox3( new cVector3( _movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f), 
 				new cVector3( _movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f))); 
@@ -411,7 +454,7 @@ namespace ACFramework
 	
 		public override void die() 
 		{ 
-			Player.addScore( Value ); 
+			Player.addScore( 100 ); 
 			base.die(); 
 		} 
 
@@ -496,8 +539,8 @@ namespace ACFramework
 	
 		public override void die() 
 		{ 
-			Player.addHealth( 10 ); 
-			base.die(); 
+			Player.addHealth( 26  ); 
+			base.dieOfOldAge();
 		} 
 
         public override string RuntimeClass
@@ -540,7 +583,7 @@ namespace ACFramework
 			if ( contains( pcritter )) //disk of pcritter is wholly inside my disk 
 			{
                 Framework.snd.play(Sound.Clap); 
-				pcritter.addScore( 100 ); 
+				//pcritter.addScore( 100 ); 
 				pcritter.addHealth( 1 ); 
 				pcritter.moveTo( new cVector3( _movebox.Midx, _movebox.Loy + 1.0f,
                     _movebox.Hiz - 3.0f )); 
@@ -581,12 +624,13 @@ namespace ACFramework
 		public static readonly float PLAYERRADIUS = 0.4f; 
 		public static readonly float BOSSRADIUS = 0.9f;
 		public static readonly float MAXPLAYERSPEED = 30.0f; 
-		private cCritterTreasure _ptreasure;
+		//private cCritterTreasure _ptreasure;
         private cCritterShape shape;
         private bool doorcollision;
         private bool wentThrough = false;
         private float startNewRoom;
-		
+		public  cCritter3DHealer critterHealer;
+
 		public cGame3D() 
 		{
 			doorcollision = false; 
@@ -594,27 +638,9 @@ namespace ACFramework
 			_menuflags |= cGame.MENU_HOPPER; //Turn on hopper listener option.
 			_spritetype = cGame.ST_MESHSKIN; 
 			setBorder( 50.0f, 14.0f, 50.0f ); // size of the world
-			//^possible error
-			
-
-
-
-
-			//options for the game amoun of enemies you will fight in the first room
-			//Added Dialog box that should 
-			//DialogResult result1 = MessageBox.Show("Yes for hard level no for easy level","Important Question", MessageBoxButtons.YesNo,MessageBoxIcon.Question);
-			
 			
 			setBorder( 64.0f, 16.0f, 64.0f ); // size of the world
-			//if (result1 == DialogResult.Yes){
-			//Score=0;
-			//}
-			//if (result1 == DialogResult.No){
-			//Score = 6;
-			//}
-{
-			//    MessageBox.Show("You answered yes, yes and no.");
-}
+			
 			cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
 			setSkyBox( skeleton );
@@ -642,6 +668,8 @@ namespace ACFramework
 			WrapFlag = cCritter.BOUNCE; 
 			_seedcount = 5; 
 			setPlayer( new cCritter3DPlayer( this )); 
+			critterHealer = new cCritter3DHealer(this);
+
 			//_ptreasure = new cCritterTreasure( this );
             shape = new cCritterShape(this);
             shape.moveTo(new cVector3( Border.Midx, Border.Hiy, Border.Midz ));
@@ -652,91 +680,65 @@ namespace ACFramework
 			//First draw a wall with dy height resting on the bottom of the world.
 			float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */ 
-			float height = 0.15f * _border.YSize; 
+			float height = 0.5f * _border.YSize; 
 			float ycenter = -_border.YRadius + height / 2.0f; 
 			float wallthickness = cGame3D.WALLTHICKNESS;
-     //       cCritterWall pwall = new cCritterWall( 
-	//			new cVector3( _border.Midx + 2.0f, ycenter, zpos ), 
-		//		new cVector3( _border.Hix, ycenter, zpos ), 
-		//		height, //thickness param for wall's dy which goes perpendicular to the 
-					//baseline established by the frist two args, up the screen 
-		//		wallthickness+22.0f, //height argument for this wall's dz  goes into the screen 
-		//		this );
-		//	cSpriteTextureBox pspritebox = 
-		//		new cSpriteTextureBox( pwall.Skeleton, BitmapRes.Wall3, 16 ); //Sets all sides 
-				/* We'll tile our sprites three times along the long sides, and on the
-			short ends, we'll only tile them once, so we reset these two. */
-      //    pwall.Sprite = pspritebox; 
-		
 		
 			//Then draw a ramp to the top of the wall.  Scoot it over against the right wall.
-			float planckwidth = 8.0f * height; 
+			float planckwidth = 8.5f * height; 
 
-			cCritterWall pwall1 = new cCritterWall(
-                new cVector3(_border.Midx+50.0f + 0.0f, ycenter, zpos),
-                new cVector3(_border.Hix-30.0f, ycenter, zpos),
-                height, //thickness param for wall's dy which goes perpendicular to the 
-                wallthickness, //height argument for this wall's dz  goes into the screen 
+			//make a bunch of walls to create room layout
+            cCritterWall pwall = new cCritterWall(
+                new cVector3(_border.Midx + 0.0f, ycenter, zpos),
+                new cVector3(_border.Hix, ycenter, zpos),
+                height, 
+                wallthickness, 
                 this);
 
-			
-         //   cCritterWall pwall2 = new cCritterWall(
-           //     new cVector3(_border.Midx - 2.0f, ycenter, zpos + 0.0f),
-             //   new cVector3(_border.Hix - 32.0f, ycenter, zpos),
-               // height, //thickness param for wall's dy which goes perpendicular to the 
-                //wallthickness, //height argument for this wall's dz  goes into the screen 
-                //this);
+            cCritterWall pwall2 = new cCritterWall(
+                new cVector3(_border.Midx - 2.0f, ycenter, zpos + 20.0f),
+                new cVector3(_border.Hix - 32.0f, ycenter, zpos),
+                height, 
+                wallthickness, 
+                this);
+				
+            cCritterWall pwall3 = new cCritterWall(
+                new cVector3(_border.Midx - 80.0f, ycenter, zpos + 15.0f),
+                new cVector3(_border.Hix - 45.0f, ycenter, zpos + 4.0f),
+                height,
+                wallthickness,                 this);
 
-          //dont touch this wall
-			  cCritterWall pwall3 = new cCritterWall(
-                new cVector3(_border.Midx -50.0f, ycenter, zpos + 13.0f),
-                new cVector3(_border.Hix - 35.0f, ycenter, zpos - 1.0f),
-                height, //thickness param for wall's dy which goes perpendicular to the 
-                wallthickness, //height argument for this wall's dz  goes into the screen 
+            cCritterWall pwall4 = new cCritterWall(
+                new cVector3(_border.Midx - 2.0f, ycenter, zpos + 10.0f),
+                new cVector3(_border.Hix - 2.0f, ycenter, zpos),
+                height, 
+                wallthickness, 
                 this);
 
+            cCritterWall pwall5 = new cCritterWall(
+                new cVector3(_border.Midx - 20, ycenter, zpos - 5.0f),
+                new cVector3(_border.Hix - 20, ycenter, zpos - 35.0f),
+                height,
+                wallthickness,
+                this);
 
-			cSpriteTextureBox pspritebox1 = new cSpriteTextureBox(pwall1.Skeleton, BitmapRes.Wall3, 16); 
-            //cSpriteTextureBox pspritebox2 = new cSpriteTextureBox(pwall2.Skeleton, BitmapRes.Wall3, 16); 
+			cSpriteTextureBox pspritebox1 = new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); 
+            cSpriteTextureBox pspritebox2 = new cSpriteTextureBox(pwall2.Skeleton, BitmapRes.Wall3, 16); 
             cSpriteTextureBox pspritebox3 = new cSpriteTextureBox(pwall3.Skeleton, BitmapRes.Wall3, 16);            
-			//cSpriteTextureBox pspritebox4 = new cSpriteTextureBox(pwall4.Skeleton, BitmapRes.Wall3, 16); 
-          //cSpriteTextureBox pspritebox5 = new cSpriteTextureBox(pwall5.Skeleton, BitmapRes.Wall3, 16); 
+			cSpriteTextureBox pspritebox4 = new cSpriteTextureBox(pwall4.Skeleton, BitmapRes.Wall3, 16); 
+            cSpriteTextureBox pspritebox5 = new cSpriteTextureBox(pwall5.Skeleton, BitmapRes.Wall3, 16); 
 
-            pwall1.Sprite = pspritebox1;
-           // pwall2.Sprite = pspritebox2;
+            pwall.Sprite = pspritebox1;
+            pwall2.Sprite = pspritebox2;
             pwall3.Sprite = pspritebox3;
-          //  pwall4.Sprite = pspritebox4;
-          //  pwall5.Sprite = pspritebox5;
-          
-
-			//comments out ramp for now
-			//pwall = new cCritterWall( 
-				//new cVector3( _border.Hix -planckwidth / 2.0f, _border.Loy, _border.Hiz - 2.0f), 
-				//new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
-				//planckwidth+2.0f, //thickness param for wall's dy which is perpenedicualr to the baseline, 
-				//which goes into the screen, so thickness goes to the right 
-				//wallthickness+0.25f, //_border.zradius(),  //height argument for wall's dz which goes into the screen 
-				//this );
-         //   cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
-           //     BitmapRes.Wall3, 2 );
-            //pwall.Sprite = stb;
-			//merge from noah that might work in this idk we will check it
-			//float planckwidth = 9.0f * height; 
-			//pwall = new cCritterWall( 
-			//	new cVector3( _border.Hix -planckwidth / 3.0f, _border.Loy, _border.Hiz - 2.0f), 
-			//	new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
-			//	planckwidth+2.0f, //thickness param for wall's dy which is perpenedicualr to the baseline, 
-			//			//which goes into the screen, so thickness goes to the right 
-			//	wallthickness+0.25f, //_border.zradius(),  //height argument for wall's dz which goes into the screen 
-			//	this );
-   //         cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
-   //             BitmapRes.Wall3 );
-   //         pwall.Sprite = stb;
+            pwall4.Sprite = pspritebox4;
+            pwall5.Sprite = pspritebox5;
 		
 			cCritterDoor pdwall = new cCritterDoor( 
 				new cVector3( _border.Lox, _border.Loy, _border.Midz ), 
 				new cVector3( _border.Lox, _border.Midy - 3, _border.Midz ), 
 				0.1f, 2, this ); 
+
 			cSpriteTextureBox pspritedoor = 
 				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
 			pdwall.Sprite = pspritedoor;
@@ -745,11 +747,7 @@ namespace ACFramework
 
         public void setRoom1( )
         {
-
-			//Now hear me out guys if I cant get a new room what if i just build a new room on top of that
-
-
-
+			//bool gotToSecondRoom = true
             Biota.purgeCritters<cCritterWall>();
             Biota.purgeCritters<cCritter3Dcharacter>();
             Biota.purgeCritters<cCritterShape>();
@@ -770,15 +768,56 @@ namespace ACFramework
 			//this code makes the wall go up or down
             float ycenter = -_border.YRadius + height / 2.0f;
             float wallthickness = cGame3D.WALLTHICKNESS;
+           
+
+				//make a bunch of walls to create room layout
             cCritterWall pwall = new cCritterWall(
-                new cVector3(_border.Midx + 3.0f, ycenter, zpos),
-                new cVector3(_border.Hix+3.0f, ycenter, zpos),
-                height, //thickness param for wall's dy which goes perpendicular to the 
-                //baseline established by the frist two args, up the screen 
-                wallthickness, //height argument for this wall's dz  goes into the screen 
-                this);;
-            cSpriteTextureBox pspritebox =
-                new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); //Sets all sides 
+                new cVector3(_border.Midx + 0.0f, ycenter, zpos),
+                new cVector3(_border.Hix, ycenter, zpos),
+                height, 
+                wallthickness, 
+                this);
+
+            cCritterWall pwall2 = new cCritterWall(
+                new cVector3(_border.Midx - 2.0f, ycenter, zpos + 20.0f),
+                new cVector3(_border.Hix - 32.0f, ycenter, zpos),
+                height, 
+                wallthickness, 
+                this);
+				
+            cCritterWall pwall3 = new cCritterWall(
+                new cVector3(_border.Midx - 80.0f, ycenter, zpos + 15.0f),
+                new cVector3(_border.Hix - 45.0f, ycenter, zpos + 4.0f),
+                height,
+                wallthickness,                 this);
+
+            cCritterWall pwall4 = new cCritterWall(
+                new cVector3(_border.Midx - 2.0f, ycenter, zpos + 10.0f),
+                new cVector3(_border.Hix - 2.0f, ycenter, zpos),
+                height, 
+                wallthickness, 
+                this);
+
+            /*cCritterWall pwall5 = new cCritterWall(
+                new cVector3(_border.Midx - 20, ycenter, zpos - 5.0f),
+                new cVector3(_border.Hix - 20, ycenter, zpos - 35.0f),
+                height,
+                wallthickness,
+                this);
+			*/
+			cSpriteTextureBox pspritebox1 = new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); 
+            cSpriteTextureBox pspritebox2 = new cSpriteTextureBox(pwall2.Skeleton, BitmapRes.Wall3, 16); 
+            cSpriteTextureBox pspritebox3 = new cSpriteTextureBox(pwall3.Skeleton, BitmapRes.Wall3, 16);            
+			cSpriteTextureBox pspritebox4 = new cSpriteTextureBox(pwall4.Skeleton, BitmapRes.Wall3, 16); 
+         //   cSpriteTextureBox pspritebox5 = new cSpriteTextureBox(pwall5.Skeleton, BitmapRes.Wall3, 16); 
+
+            pwall.Sprite = pspritebox1;
+            pwall2.Sprite = pspritebox2;
+            pwall3.Sprite = pspritebox3;
+            pwall4.Sprite = pspritebox4;
+           // pwall5.Sprite = pspritebox5;
+
+
             /* We'll tile our sprites three times along the long sides, and on the
         short ends, we'll only tile them once, so we reset these two. */
 			//MADE DOOR HERE put in room one
@@ -791,7 +830,6 @@ namespace ACFramework
 				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
 			pdwall.Sprite = pspritedoor;
 			//---------------------------------------------------------------------------------------------------
-            pwall.Sprite = pspritebox;
             wentThrough = true;
             startNewRoom = Age;
 			
@@ -799,6 +837,7 @@ namespace ACFramework
 		
 		public void setRoom2( )
         {
+			_seedcount = 0;
             Biota.purgeCritters<cCritterWall>();
             Biota.purgeCritters<cCritter3Dcharacter>();
             Biota.purgeCritters<cCritterShape>();
@@ -811,7 +850,9 @@ namespace ACFramework
 	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Red );
 	        //create boss here
 			//add healer here too
-			_seedcount = 1;
+			new cCritter3DHealer(this);
+			new cCritter3DBoss(this);
+			//_seedcount = 1;
 
 	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
@@ -823,19 +864,18 @@ namespace ACFramework
             
 			
 			
-			cCritterWall pwall = new cCritterWall(
-                new cVector3(_border.Midx + 3.0f, ycenter, zpos),
-                new cVector3(_border.Hix+3.0f, ycenter, zpos),
-                height, //thickness param for wall's dy which goes perpendicular to the 
-                //baseline established by the frist two args, up the screen 
-                wallthickness + 80.0f, //height argument for this wall's dz  goes into the screen 
-                this);;
+			/*cCritterMovingWall pwall = new cCritterMovingWall(
+                           new cVector3(-_border.Midx, -ycenter, -zpos),
+                            new cVector3(-_border.Hix, -ycenter, -zpos),
+                            height, //thickness param for wall's dy which goes perpendicular to the 
+                            wallthickness, //height argument for this wall's dz  goes into the screen 
+                            this);
 			
             cSpriteTextureBox pspritebox =
-                new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); //Sets all sides 
+                new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Door, 16); //Sets all sides 
             /* We'll tile our sprites three times along the long sides, and on the
         short ends, we'll only tile them once, so we reset these two. */
-            pwall.Sprite = pspritebox;
+          //  pwall.Sprite = pspritebox;
             wentThrough = true;
             startNewRoom = Age;
 			
@@ -847,8 +887,6 @@ namespace ACFramework
             for (int i = 0; i < _seedcount; i++) 
 				new cCritter3Dcharacter( this );
 
-			new cCritter3DHealer(this);
-			new cCritter3DBoss(this);
             Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f)); 
 				/* We start at hiz and move towards	loz */ 
 		} 
@@ -899,11 +937,12 @@ namespace ACFramework
 	
 		public override void adjustGameParameters() 
 		{
+			bool room1Cleared = false;
 		// (1) End the game if the player is dead 
 			if ( (Health == 0) && !_gameover ) //Player's been killed and game's not over.
 			{ 
 				_gameover = true; 
-				Player.addScore( _scorecorrection ); // So user can reach _maxscore  
+			//	Player.addScore( _scorecorrection ); // So user can reach _maxscore  
                 Framework.snd.play(Sound.Hallelujah);
                 return ; 
 			} 
@@ -923,14 +962,14 @@ namespace ACFramework
 			
 
       
-			if (rmcnt ==1&& Score>=3&& doorcollision==true){
+			if (rmcnt ==1&& Score>=1&& doorcollision==true){
 				rmcnt=rmcnt+1;
                 setRoom1();
                 doorcollision = false;
-
+				room1Cleared = true;
 			}
 				//_____________________________________
-			if (rmcnt ==2&& Score>=5){
+			if (rmcnt ==2&& Score>=15 && room1Cleared == true){
 				rmcnt=rmcnt+1;
                 setRoom2();
                 doorcollision = false;
