@@ -821,7 +821,7 @@ namespace ACFramework
             float ycenter = -_border.YRadius + height / 2.0f;
             float wallthickness = cGame3D.WALLTHICKNESS;
             
-			
+			//////////////////////////////////////////////////WALL NEEDS TO MOVE
 			
 			cCritterWall pwall = new cCritterWall(
                 new cVector3(_border.Midx + 3.0f, ycenter, zpos),
