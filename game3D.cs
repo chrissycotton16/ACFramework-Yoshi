@@ -121,10 +121,10 @@ namespace ACFramework
 			else 
 			{ 
 
-				if(pcritter.Sprite.ModelState != State.FallForwardDie || pcritter.Sprite.ModelState != State.FallForwardDie)
+				if(pcritter.Sprite.ModelState != State.FallForwardDie || pcritter.Sprite.ModelState != State.FallbackDie)
 				{
 					damage( 1 );
-					Framework.snd.play(Sound.Crunch); 
+					Framework.snd.play(Sound.LaserFire); 
 				}
 			
 
@@ -176,14 +176,17 @@ namespace ACFramework
 			{
 				Sprite = new cSpriteSphere(0.2f);
 				Sprite.FillColor = Color.Purple;
+				Framework.snd.play(Sound.Crunch);
 			}
 			else if(((cCritter3DPlayer)pshooter).Mode1 == 'W')
 			{
+				Framework.snd.play(Sound.Clap);
 				Sprite = new cSpriteQuake(ModelsMD2.bunny);
 				Radius = 0.2f;
 			}
 			else //E
 			{
+				Framework.snd.play(Sound.Goopy);
 				Sprite = new cSpriteSphere(0.2f);
 				Sprite.FillColor = Color.Green;
 			}
