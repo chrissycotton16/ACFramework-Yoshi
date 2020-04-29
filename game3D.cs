@@ -455,6 +455,8 @@ namespace ACFramework
 		public override void die() 
 		{ 
 			Player.addScore( 100 ); 
+			MessageBox.Show("You killed the boss.");
+			//winGame();
 			base.die(); 
 		} 
 
@@ -668,7 +670,7 @@ namespace ACFramework
 			WrapFlag = cCritter.BOUNCE; 
 			_seedcount = 5; 
 			setPlayer( new cCritter3DPlayer( this )); 
-			critterHealer = new cCritter3DHealer(this);
+			new cCritter3DHealer(this);
 
 			//_ptreasure = new cCritterTreasure( this );
             shape = new cCritterShape(this);
@@ -779,25 +781,19 @@ namespace ACFramework
                 this);
 
             cCritterWall pwall2 = new cCritterWall(
-                new cVector3(_border.Midx - 2.0f, ycenter, zpos + 20.0f),
-                new cVector3(_border.Hix - 32.0f, ycenter, zpos),
+                new cVector3(_border.Midx + 2.0f, ycenter, zpos + 20.0f),
+                new cVector3(_border.Hix + 32.0f, ycenter, zpos),
                 height, 
                 wallthickness, 
                 this);
 				
             cCritterWall pwall3 = new cCritterWall(
-                new cVector3(_border.Midx - 80.0f, ycenter, zpos + 15.0f),
-                new cVector3(_border.Hix - 45.0f, ycenter, zpos + 4.0f),
+                new cVector3(_border.Midx + 80.0f, ycenter, zpos + 15.0f),
+                new cVector3(_border.Hix + 45.0f, ycenter, zpos + 4.0f),
                 height,
                 wallthickness,                 this);
 
-            cCritterWall pwall4 = new cCritterWall(
-                new cVector3(_border.Midx - 2.0f, ycenter, zpos + 10.0f),
-                new cVector3(_border.Hix - 2.0f, ycenter, zpos),
-                height, 
-                wallthickness, 
-                this);
-
+          
             /*cCritterWall pwall5 = new cCritterWall(
                 new cVector3(_border.Midx - 20, ycenter, zpos - 5.0f),
                 new cVector3(_border.Hix - 20, ycenter, zpos - 35.0f),
@@ -808,13 +804,13 @@ namespace ACFramework
 			cSpriteTextureBox pspritebox1 = new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); 
             cSpriteTextureBox pspritebox2 = new cSpriteTextureBox(pwall2.Skeleton, BitmapRes.Wall3, 16); 
             cSpriteTextureBox pspritebox3 = new cSpriteTextureBox(pwall3.Skeleton, BitmapRes.Wall3, 16);            
-			cSpriteTextureBox pspritebox4 = new cSpriteTextureBox(pwall4.Skeleton, BitmapRes.Wall3, 16); 
+			//cSpriteTextureBox pspritebox4 = new cSpriteTextureBox(pwall4.Skeleton, BitmapRes.Wall3, 16); 
          //   cSpriteTextureBox pspritebox5 = new cSpriteTextureBox(pwall5.Skeleton, BitmapRes.Wall3, 16); 
 
             pwall.Sprite = pspritebox1;
             pwall2.Sprite = pspritebox2;
             pwall3.Sprite = pspritebox3;
-            pwall4.Sprite = pspritebox4;
+        //    pwall4.Sprite = pspritebox4;
            // pwall5.Sprite = pspritebox5;
 
 
@@ -863,7 +859,25 @@ namespace ACFramework
             float wallthickness = cGame3D.WALLTHICKNESS;
             
 			
-			
+				//make a bunch of walls to create room layout
+            cCritterWall pwall = new cCritterWall(
+                new cVector3(_border.Midx + 0.0f, ycenter, zpos),
+                new cVector3(_border.Hix, ycenter, zpos),
+                height, 
+                wallthickness, 
+                this);
+
+            cCritterWall pwall2 = new cCritterWall(
+                new cVector3(_border.Midx - 2.0f, ycenter, zpos + 20.0f),
+                new cVector3(_border.Hix - 32.0f, ycenter, zpos),
+                height, 
+                wallthickness, 
+                this);
+
+			cSpriteTextureBox pspritebox1 = new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); 
+            cSpriteTextureBox pspritebox2 = new cSpriteTextureBox(pwall2.Skeleton, BitmapRes.Wall3, 16); 
+			 pwall.Sprite = pspritebox1;
+            pwall2.Sprite = pspritebox2;
 			/*cCritterMovingWall pwall = new cCritterMovingWall(
                            new cVector3(-_border.Midx, -ycenter, -zpos),
                             new cVector3(-_border.Hix, -ycenter, -zpos),
@@ -889,6 +903,7 @@ namespace ACFramework
 
             Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f)); 
 				/* We start at hiz and move towards	loz */ 
+			new cCritter3DHealer(this);
 		} 
 
 		
@@ -955,8 +970,7 @@ namespace ACFramework
 		// (3) Maybe check some other conditions.
 		int rmcnt =1;
             if (wentThrough && (Age - startNewRoom) > 1.0f)
-            {
-            
+            {           
                 wentThrough = false;
             }
 			
