@@ -329,19 +329,19 @@ namespace ACFramework
 			
 			if(alive){
 				//draw critters to player to attack (tutorial 2)
-				if(distanceTo(Player) >=15){
+				if(distanceTo(Player) >=25){
 					clearForcelist();
 					Sprite.ModelState = State.Idle;
 				//	addForce(new cForceDrag(0.0f));
 				//	addForce(new cForceGravity(25.0f, new cVector3(0.0f,-1f,0.00f)));
 				}
-				else if(distanceTo(Player) <  15){
+				else if(distanceTo(Player) <  25){
 					clearForcelist();
 					addForce(new cForceGravity(25.0f, new cVector3(0.0f, -1f, 0.00f)));
 					addForce(new cForceDrag(0.5f));
 					addForce(new cForceObjectSeek(Player, 0.5f));
-					if(distanceTo(Player) > 8)
-					{
+					if(distanceTo(Player) < 25 && distanceTo(Player) > 20)
+ 					{
 						Sprite.ModelState = State.Crouch;
 					}
 					else
