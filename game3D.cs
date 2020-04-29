@@ -197,8 +197,6 @@ namespace ACFramework
             {
                 if (((cCritter3DPlayer)Player).Mode1 == 'Q') //1 point
 				{
-
-					
 					Random rnd = new Random();
 					int randomDeath = rnd.Next (1, 3);
 					//pcritter.Radius = originalRadius;
