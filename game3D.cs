@@ -211,7 +211,7 @@ namespace ACFramework
 					pcritter.clearForcelist();
 					pcritter.addForce(new cForceDrag(50.0f));
 					pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));
-					pcritter.Radius = 0;
+					//pcritter.Radius = 0;
 					Player.addScore(1);
 				}
                      
@@ -275,7 +275,7 @@ namespace ACFramework
             : base( pownergame ) 
 		{
             addForce(new cForceGravity(25.0f, new cVector3(0.0f, -1, 0.00f)));
-            addForce(new cForceDrag(0.5f));  // default friction strength 0.5 
+            addForce(new cForceDrag(0.9f));  // default friction strength 0.5 
 			Density = 2.0f; 
 			MaxSpeed = 30.0f;
             if (pownergame != null) //Just to be safe.
@@ -329,16 +329,16 @@ namespace ACFramework
 			
 			if(alive){
 				//draw critters to player to attack (tutorial 2)
-				if(distanceTo(Player) >=10){
+				if(distanceTo(Player) >=15){
 					clearForcelist();
 					Sprite.ModelState = State.Idle;
 				//	addForce(new cForceDrag(0.0f));
 				//	addForce(new cForceGravity(25.0f, new cVector3(0.0f,-1f,0.00f)));
 				}
-				else if(distanceTo(Player) <  10){
+				else if(distanceTo(Player) <  15){
 					clearForcelist();
 					addForce(new cForceGravity(25.0f, new cVector3(0.0f, -1f, 0.00f)));
-					addForce(new cForceDrag(0.0f));
+					addForce(new cForceDrag(0.5f));
 					addForce(new cForceObjectSeek(Player, 0.5f));
 					if(distanceTo(Player) > 8)
 					{
@@ -629,7 +629,7 @@ namespace ACFramework
         private bool doorcollision;
         private bool wentThrough = false;
         private float startNewRoom;
-		public  cCritter3DHealer critterHealer;
+		//public  cCritter3DHealer critterHealer;
 
 		public cGame3D() 
 		{
@@ -662,8 +662,7 @@ namespace ACFramework
             //SkyBox.setSideSolidColor( cRealBox3.HIX, Color.ForestGreen ); //right wall 
 			SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Wood2,16 ); //floor 
 			SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Sky,2 ); //ceiling 
-			
-
+		
 
 			WrapFlag = cCritter.BOUNCE; 
 			_seedcount = 5; 
@@ -751,7 +750,7 @@ namespace ACFramework
             Biota.purgeCritters<cCritterWall>();
             Biota.purgeCritters<cCritter3Dcharacter>();
             Biota.purgeCritters<cCritterShape>();
-            setBorder(80.0f, 15.0f, 50.0f); 
+            setBorder(60.0f, 15.0f, 40.0f); 
 	        cRealBox3 skeleton = new cRealBox3();
             skeleton.copy( _border );
 	        setSkyBox(skeleton);
@@ -761,7 +760,7 @@ namespace ACFramework
 	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.YGround );
 	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Blue );
 	        _seedcount = 20;
-	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
+	        Player.setMoveBox( new cRealBox3( 60.0f, 15.0f, 40.0f ) );
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
             float height = 3.0f * _border.YSize;
@@ -835,7 +834,7 @@ namespace ACFramework
             Biota.purgeCritters<cCritterWall>();
             Biota.purgeCritters<cCritter3Dcharacter>();
             Biota.purgeCritters<cCritterShape>();
-            setBorder(80.0f, 15.0f, 50.0f); 
+            setBorder(60.0f, 15.0f, 40.0f); 
 	        cRealBox3 skeleton = new cRealBox3();
             skeleton.copy( _border );
 	        setSkyBox(skeleton);
@@ -848,7 +847,7 @@ namespace ACFramework
 			new cCritter3DBoss(this);
 			//_seedcount = 1;
 
-	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
+	        Player.setMoveBox( new cRealBox3( 60.0f, 15.0f, 40.0f ) );
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
             float height = 3.0f * _border.YSize;
