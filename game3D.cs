@@ -969,40 +969,26 @@ namespace ACFramework
 				new cCritter3Dcharacter( this ); 
 		// (3) Maybe check some other conditions.
 		int rmcnt =1;
+			bool BossAlive = true;
             if (wentThrough && (Age - startNewRoom) > 1.0f)
             {           
                 wentThrough = false;
             }
-			
-
-      
-			if (rmcnt ==1&& Score>=1&& doorcollision==true){
+			if (rmcnt ==1 && Score >= 1 && doorcollision==true){
 				rmcnt=rmcnt+1;
                 setRoom1();
                 doorcollision = false;
 				room1Cleared = true;
 			}
-				//_____________________________________
-			if (rmcnt ==2&& Score>=15 && room1Cleared == true){
+			if (rmcnt ==2 && Score >= 5 && room1Cleared == true){
 				rmcnt=rmcnt+1;
                 setRoom2();
                 doorcollision = false;
+			}		
+			if(rmcnt == 3 && !BossAlive){
+				MessageBox.Show("Endgame");
+			}
 
-			}
-			if (Score >=10){
-				
-					//Framework.snd.play(Sound.Clap); 
-					//Environment.Exit;
-						//Application.Exit;
-						//should be working but it doesnt seem to work
-						//MessageBox.Show("Congratulations You beat Macho Chicken!!!");
-						//obstacles
-			}
-				///////////////////////////////////////
-				
-            //}
-				
-			
 		} 
 	}
 }
