@@ -872,7 +872,15 @@ namespace ACFramework
         {
             get
             {
-                return "Your Score Was " + Score.ToString();
+                if(Health == 0)
+                {
+                    return "You lost! \nYour Score Was " + Score.ToString();
+                }
+                else
+                {
+                    return "Congratulations! \nYour Score Was " + Score.ToString();
+                }
+                //return "Your Score Was " + Score.ToString();
             }
         }
 
