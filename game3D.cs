@@ -831,7 +831,6 @@ namespace ACFramework
 		public void setRoom2( )
         {
 			_seedcount = 0;
-            Biota.purgeCritters<cCritterWall>();
             Biota.purgeCritters<cCritter3Dcharacter>();
             Biota.purgeCritters<cCritterShape>();
             setBorder(60.0f, 15.0f, 40.0f); 
@@ -854,39 +853,8 @@ namespace ACFramework
 			//this code makes the wall go up or down
             float ycenter = -_border.YRadius + height / 2.0f;
             float wallthickness = cGame3D.WALLTHICKNESS;
-            
-			
-				//make a bunch of walls to create room layout
-            cCritterWall pwall = new cCritterWall(
-                new cVector3(_border.Midx + 0.0f, ycenter, zpos),
-                new cVector3(_border.Hix, ycenter, zpos),
-                height, 
-                wallthickness, 
-                this);
+            Biota.purgeCritters<cCritterWall>();
 
-            cCritterWall pwall2 = new cCritterWall(
-                new cVector3(_border.Midx - 2.0f, ycenter, zpos + 20.0f),
-                new cVector3(_border.Hix - 32.0f, ycenter, zpos),
-                height, 
-                wallthickness, 
-                this);
-
-			cSpriteTextureBox pspritebox1 = new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); 
-            cSpriteTextureBox pspritebox2 = new cSpriteTextureBox(pwall2.Skeleton, BitmapRes.Wall3, 16); 
-			 pwall.Sprite = pspritebox1;
-            pwall2.Sprite = pspritebox2;
-			/*cCritterMovingWall pwall = new cCritterMovingWall(
-                           new cVector3(-_border.Midx, -ycenter, -zpos),
-                            new cVector3(-_border.Hix, -ycenter, -zpos),
-                            height, //thickness param for wall's dy which goes perpendicular to the 
-                            wallthickness, //height argument for this wall's dz  goes into the screen 
-                            this);
-			
-            cSpriteTextureBox pspritebox =
-                new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Door, 16); //Sets all sides 
-            /* We'll tile our sprites three times along the long sides, and on the
-        short ends, we'll only tile them once, so we reset these two. */
-          //  pwall.Sprite = pspritebox;
             wentThrough = true;
             startNewRoom = Age;
 			
