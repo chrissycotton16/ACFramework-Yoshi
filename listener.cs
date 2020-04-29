@@ -448,6 +448,8 @@ namespace ACFramework
             bool Q = Framework.Keydev[vk.Q];
             bool W = Framework.Keydev[vk.W];
             bool E = Framework.Keydev[vk.E];
+            bool H = Framework.Keydev[vk.H];
+            bool J = Framework.Keydev[vk.J];
 
 
             if(Q)
@@ -464,6 +466,20 @@ namespace ACFramework
             {
                 ((cCritter3DPlayer)pcritter).Mode1 = 'E';
                 return;
+            }
+
+            if(H) //win - we need to set winning parameters first
+            {
+                ((cCritter3DPlayer)pcritter).setHealth(1000000);
+                //figure out how to kill all critters
+                
+                //((cCritter3DPlayer)pcritter).addScore(); //winning score
+                //((cCritter3Dcharacter)pcritter).delete_me();
+                //((cCritter3DBoss)pcritter).die();
+            }
+            if(J) //lose
+            {
+                ((cCritter3DPlayer)pcritter).setHealth(0);
             }
 
             if (!_hopping && up)
