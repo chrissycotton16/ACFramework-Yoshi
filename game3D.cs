@@ -81,8 +81,7 @@ namespace ACFramework
                 Game.Border.Midz)) < 3.0f)
             {
                 warningGiven = true;
-                MessageBox.Show("You must have a score of 6 to go through this door and then a score of 20 to go to the next one");
-				
+                MessageBox.Show("You must have a score of 15 to go through this door. \nP.S. To get to the Boss room you need a score of 50.");
             }
  
         } 
@@ -203,6 +202,7 @@ namespace ACFramework
 				{
 					if(!(pcritter is cCritter3DHealer) && !(pcritter is cCritter3DBoss))
 					{
+						((cCritter3Dcharacter)pcritter).alive = false;
 						Random rnd = new Random();
 						int randomDeath = rnd.Next (1, 3);
 						//pcritter.Radius = originalRadius;
@@ -217,7 +217,6 @@ namespace ACFramework
 						pcritter.clearForcelist();
 						pcritter.addForce(new cForceDrag(50.0f));
 						pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));
-						pcritter.Radius = 0;
 						Player.addScore(1);
 					}
 
@@ -240,7 +239,7 @@ namespace ACFramework
 						pcritter.Radius = 0;
 						Player.addScore(2);
 						if(pcritter is cCritter3DBoss)
-						{
+						{							
 							pcritter.die();
 						}
 					}
@@ -330,7 +329,6 @@ namespace ACFramework
 		public override void update( ACView pactiveview, float dt ) 
 		{ 
 			
-
 			base.update( pactiveview, dt ); //Always call this first
 			rotateAttitude(Tangent.rotationAngle(AttitudeTangent));
 			
@@ -360,8 +358,8 @@ namespace ACFramework
 			
 		
 
-			if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
-				delete_me(); //tell the game to remove yourself if you fall up to the hiz.
+		//	if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
+		//		delete_me(); //tell the game to remove yourself if you fall up to the hiz.
         }
 
         // do a delete_me if you hit the left end 
@@ -396,7 +394,8 @@ namespace ACFramework
 			MaxSpeed = 30.0f;
             if (pownergame != null) //Just to be safe.
                 Sprite = new cSpriteQuake(Framework.models.selectRandomCritter());
-            
+            //moveTo(new cVector3(5.0f, 0.0f, -50.0f));
+
 			//draw critters to player to attack (tutorial 2)
 		
 			if(distanceTo(Player) < 1){
@@ -451,8 +450,8 @@ namespace ACFramework
 		{ 
 			base.update( pactiveview, dt ); //Always call this first
 			rotateAttitude(Tangent.rotationAngle(AttitudeTangent));
-			if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
-				delete_me(); //tell the game to remove yourself if you fall up to the hiz.
+		//	if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
+			//	delete_me(); //tell the game to remove yourself if you fall up to the hiz.
         } 
 
 		// do a delete_me if you hit the left end 
@@ -461,7 +460,7 @@ namespace ACFramework
 		{ 
 			//MessageBox.Show("in boss die");
 			Player.addScore( 100 ); 
-
+			cGame3D.gameOverBoss = true;
 			base.die(); 
 		} 
 
@@ -538,8 +537,8 @@ namespace ACFramework
 		public override void update( ACView pactiveview, float dt ) 
 		{ 
 			base.update( pactiveview, dt ); //Always call this first
-			if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
-				delete_me(); //tell the game to remove yourself if you fall up to the hiz.
+		//	if ( (_outcode & cRealBox3.BOX_HIZ) != 0 ) /* use bitwise AND to check if a flag is set. */ 
+			//	delete_me(); //tell the game to remove yourself if you fall up to the hiz.
         } 
 
 		// do a delete_me if you hit the left end 
@@ -637,7 +636,7 @@ namespace ACFramework
         private bool wentThrough = false;
         private float startNewRoom;
 		//public  cCritter3DHealer critterHealer;
-
+		public static bool gameOverBoss = false;
 		public cGame3D() 
 		{
 			doorcollision = false; 
@@ -672,7 +671,7 @@ namespace ACFramework
 		
 
 			WrapFlag = cCritter.BOUNCE; 
-			_seedcount = 5; 
+			_seedcount = 10; 
 			setPlayer( new cCritter3DPlayer( this )); 
 			new cCritter3DHealer(this);
 
@@ -751,6 +750,7 @@ namespace ACFramework
 			
 		} 
 
+
         public void setRoom1( )
         {
 			//bool gotToSecondRoom = true
@@ -766,7 +766,7 @@ namespace ACFramework
 	        SkyBox.setAllSidesTexture( BitmapRes.Y2Ground, 2 );
 	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.YGround );
 	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Blue );
-	        _seedcount = 20;
+	        _seedcount = 15;
 	        Player.setMoveBox( new cRealBox3( 60.0f, 15.0f, 40.0f ) );
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
@@ -832,7 +832,7 @@ namespace ACFramework
 			//---------------------------------------------------------------------------------------------------
             wentThrough = true;
             startNewRoom = Age;
-			
+
 		}
 		
 		public void setRoom2( )
@@ -840,7 +840,7 @@ namespace ACFramework
 			_seedcount = 0;
             Biota.purgeCritters<cCritter3Dcharacter>();
             Biota.purgeCritters<cCritterShape>();
-            setBorder(60.0f, 15.0f, 40.0f); 
+            setBorder(80.0f, 15.0f, 50.0f); 
 	        cRealBox3 skeleton = new cRealBox3();
             skeleton.copy( _border );
 	        setSkyBox(skeleton);
@@ -853,7 +853,8 @@ namespace ACFramework
 			new cCritter3DBoss(this);
 			//_seedcount = 1;
 
-	        Player.setMoveBox( new cRealBox3( 60.0f, 15.0f, 40.0f ) );
+	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
+
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
             float height = 3.0f * _border.YSize;
@@ -862,6 +863,25 @@ namespace ACFramework
             float wallthickness = cGame3D.WALLTHICKNESS;
             Biota.purgeCritters<cCritterWall>();
 
+            
+			//////////////////////////////////////////////////WALL NEEDS TO MOVE
+			
+			cCritterMovingWall pMovingWall = new cCritterMovingWall(
+                           new cVector3(_border.Midx, ycenter, zpos),
+                            new cVector3(_border.Hix, ycenter, zpos),
+                            wallthickness, //thickness param for wall's dy which goes perpendicular to the 
+                            height, //height argument for this wall's dz  goes into the screen 
+                            this);
+			
+            cSpriteTextureBox pspritebox =
+                new cSpriteTextureBox(pMovingWall.Skeleton, BitmapRes.Door, 16); //Sets all sides 
+			pMovingWall.Sprite = pspritebox;
+            /* We'll tile our sprites three times along the long sides, and on the
+        short ends, we'll only tile them once, so we reset these two. */
+          //  pwall.Sprite = pspritebox;
+			
+			//DNW 
+			//moveWall = true;
             wentThrough = true;
             startNewRoom = Age;
 			
@@ -897,6 +917,7 @@ namespace ACFramework
 		
 		public override cCritterViewer Viewpoint 
 		{ 
+		
             set
             {
 			    if ( value.Listener.RuntimeClass == "cListenerViewerRide" ) 
@@ -919,23 +940,25 @@ namespace ACFramework
             }
 		} 
 
+
 		/* Move over to be above the
 			lower left corner where the player is.  In 3D, use a low viewpoint low looking up. */ 
 	
 		public override void adjustGameParameters() 
 		{
+
 			bool room1Cleared = false;
 		// (1) End the game if the player is dead 
 			if ( (Health == 0) && !_gameover ) //Player's been killed and game's not over.
 			{ 
 				_gameover = true; 
 			//	Player.addScore( _scorecorrection ); // So user can reach _maxscore  
-                Framework.snd.play(Sound.Hallelujah);
+                Framework.snd.play(Sound.Bangbang);
                 return ; 
 			} 
-			else if((Health != 0) && _gameover)
-			{
-
+			else if(gameOverBoss){
+				Framework.snd.play(Sound.Hallelujah);
+				_gameover = true;
 			}
 		// (2) Also don't let the the model count diminish.
 					//(need to recheck propcount in case we just called seedCritters).
@@ -945,44 +968,25 @@ namespace ACFramework
 				new cCritter3Dcharacter( this ); 
 		// (3) Maybe check some other conditions.
 		int rmcnt =1;
-			bool BossAlive = true;
             if (wentThrough && (Age - startNewRoom) > 1.0f)
             {           
                 wentThrough = false;
             }
-			if (rmcnt ==1 && Score >= 1 && doorcollision==true){
+			if (rmcnt ==1 && Score >= 15 && doorcollision==true){
 				rmcnt=rmcnt+1;
+				Player.moveTo(new cVector3(-5.0f, 3.0f, 32.0f));
+
                 setRoom1();
                 doorcollision = false;
 				room1Cleared = true;
 			}
 
-			if (rmcnt ==2 && Score >= 5 && room1Cleared == true){
+			if (rmcnt ==2 && Score >= 50 && room1Cleared == true){
 
 				rmcnt=rmcnt+1;
                 setRoom2();
                 doorcollision = false;
 			}		
-			if(rmcnt == 3 && !BossAlive){
-				MessageBox.Show("Endgame");
-			}
-
 		} 
 	}
 }
-
-		
-	
-	
-
-
-
-
-
-// MOVE WALL ADD SOUND FILES
-// move wall is the next objective
-// critter boss will be just like the healer class
-// so chrissy can take care of that 
-// move the score up as you continue into the game
-
-	//CHECK RESPAWN PROBLEM IN ROOM 2 AND 3

@@ -35,9 +35,9 @@ namespace ACFramework
                  "\n\t1. Use the arrow keys to navigate" +
                  "\n\t2. Use the page up button to jump" +
                  "\n\t3. Use the spacebar to shoot bullets at the evil Chickens" +
-                 "\n\t4. Press W for a shrinkray (this is the only way to defeat the boss!)" +
-                 "\n\t5. Press Q to get back to the normal bullet" +
-                 "\n\t6. Be careful to not shoot those Squirtles! Run into him to heal!" +
+                 "\n\t4. Press W for shrinkray (this is the only way to defeat the \n\tboss.)" +
+                 "\n\t5. Press Q to get back to the normal bullet." +
+                 "\n\t6. Be careful, don't shoot those Squirtles! Run into one to \n\theal!" +
                  "\n\t7. Press H for infinite health, Press J for no health :) "
                  );
 
