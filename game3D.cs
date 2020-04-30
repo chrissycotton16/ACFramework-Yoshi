@@ -120,11 +120,15 @@ namespace ACFramework
 			} 
 			else 
 			{ 
-
-				if(pcritter.Sprite.ModelState != State.FallForwardDie && pcritter.Sprite.ModelState != State.FallbackDie)
+				if(pcritter is cCritter3DBoss)
+				{
+					damage(10);
+				}
+				else if(pcritter.Sprite.ModelState != State.FallForwardDie && pcritter.Sprite.ModelState != State.FallbackDie && pcritter is cCritter3Dcharacter)
 				{
 					damage( 1 );
 					Framework.snd.play(Sound.LaserFire); 
+					pcritter.die(); 
 				}
 			
 				//Add sound file here for yoshi in tounge spitting
@@ -133,7 +137,6 @@ namespace ACFramework
 				Framework.snd.play(Sound.Pop); 
 
 			} 
-			pcritter.die(); 
 			return true; 
 		}
 
@@ -181,7 +184,7 @@ namespace ACFramework
 				Sprite = new cSpriteQuake(ModelsMD2.bunny);
 				Radius = 0.2f;
 			}
-			else //E
+			else //E //NOT USED - VS DIDNT LIKE US GETTING RID OF IT
 			{
 				Framework.snd.play(Sound.Goopy);
 				Sprite = new cSpriteSphere(0.2f);
@@ -195,47 +198,51 @@ namespace ACFramework
          {
             if(isTarget(pcritter) && touch(pcritter))
             {
+				
                 if (((cCritter3DPlayer)Player).Mode1 == 'Q') //1 point
 				{
-					Random rnd = new Random();
-					int randomDeath = rnd.Next (1, 3);
-					//pcritter.Radius = originalRadius;
-					if(randomDeath == 1)
+					if(!(pcritter is cCritter3DHealer) && !(pcritter is cCritter3DBoss))
 					{
-						pcritter.Sprite.ModelState = State.FallbackDie;
+						Random rnd = new Random();
+						int randomDeath = rnd.Next (1, 3);
+						//pcritter.Radius = originalRadius;
+						if(randomDeath == 1)
+						{
+							pcritter.Sprite.ModelState = State.FallbackDie;
+						}
+						if(randomDeath == 2)
+						{
+							pcritter.Sprite.ModelState = State.FallForwardDie;
+						}
+						pcritter.clearForcelist();
+						pcritter.addForce(new cForceDrag(50.0f));
+						pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));
+						pcritter.Radius = 0;
+						Player.addScore(1);
 					}
-					if(randomDeath == 2)
-					{
-						pcritter.Sprite.ModelState = State.FallForwardDie;
-					}
-					pcritter.clearForcelist();
-					pcritter.addForce(new cForceDrag(50.0f));
-					pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));
-					//pcritter.Radius = 0;
-					Player.addScore(1);
+
 				}
                      
-                else if(((cCritter3DPlayer)Player).Mode1 == 'W')//double damage - 3 points
+                else if(((cCritter3DPlayer)Player).Mode1 == 'E')//double damage//NOT USED - VS DIDNT LIKE US GETTING RID OF IT
                 {
 
                    //take away twice the amount of health from boss -- how????
 				   //add double score for regular chickens
-				   Player.addScore(3);
+				   //Player.addScore(3);
 
                 }
-				else if(((cCritter3DPlayer)Player).Mode1 == 'E') //shrink ray - 2 points
+				else if(((cCritter3DPlayer)Player).Mode1 == 'W') //shrink ray - 2 points
 				{
 					//figure out how to kill them after 2 hits
 					if(pcritter.Radius < 0.2)
 					{
-						/*probably change to just die, not state change
-						pcritter.Sprite.ModelState = State.FallbackDie;
-						pcritter.clearForcelist();
-						pcritter.addForce(new cForceDrag(50.0f));
-						pcritter.addForce(new cForceGravity(25.0f, new cVector3(0, -1, 0)));*/
 						//add more score for killing
 						pcritter.Radius = 0;
 						Player.addScore(2);
+						if(pcritter is cCritter3DBoss)
+						{
+							pcritter.die();
+						}
 					}
 						
 					else
@@ -250,7 +257,7 @@ namespace ACFramework
                 return true;
             }
             return false;
-        }
+         }
 
 
 
@@ -329,19 +336,19 @@ namespace ACFramework
 			
 			if(alive){
 				//draw critters to player to attack (tutorial 2)
-				if(distanceTo(Player) >=15){
+				if(distanceTo(Player) >=25){
 					clearForcelist();
 					Sprite.ModelState = State.Idle;
 				//	addForce(new cForceDrag(0.0f));
 				//	addForce(new cForceGravity(25.0f, new cVector3(0.0f,-1f,0.00f)));
 				}
-				else if(distanceTo(Player) <  15){
+				else if(distanceTo(Player) <  25){
 					clearForcelist();
 					addForce(new cForceGravity(25.0f, new cVector3(0.0f, -1f, 0.00f)));
 					addForce(new cForceDrag(0.5f));
 					addForce(new cForceObjectSeek(Player, 0.5f));
-					if(distanceTo(Player) > 8)
-					{
+					if(distanceTo(Player) < 25 && distanceTo(Player) > 20)
+ 					{
 						Sprite.ModelState = State.Crouch;
 					}
 					else
@@ -452,9 +459,9 @@ namespace ACFramework
 	
 		public override void die() 
 		{ 
+			//MessageBox.Show("in boss die");
 			Player.addScore( 100 ); 
-			MessageBox.Show("You killed the boss.");
-			//winGame();
+
 			base.die(); 
 		} 
 
@@ -855,6 +862,22 @@ namespace ACFramework
             float wallthickness = cGame3D.WALLTHICKNESS;
             Biota.purgeCritters<cCritterWall>();
 
+            
+			//////////////////////////////////////////////////WALL NEEDS TO MOVE
+			
+			/*cCritterMovingWall pwall = new cCritterMovingWall(
+                           new cVector3(-_border.Midx, -ycenter, -zpos),
+                            new cVector3(-_border.Hix, -ycenter, -zpos),
+                            height, //thickness param for wall's dy which goes perpendicular to the 
+                            wallthickness, //height argument for this wall's dz  goes into the screen 
+                            this);
+			
+            cSpriteTextureBox pspritebox =
+                new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Door, 16); //Sets all sides 
+            /* We'll tile our sprites three times along the long sides, and on the
+        short ends, we'll only tile them once, so we reset these two. */
+          //  pwall.Sprite = pspritebox;
+
             wentThrough = true;
             startNewRoom = Age;
 			
@@ -926,6 +949,10 @@ namespace ACFramework
                 Framework.snd.play(Sound.Hallelujah);
                 return ; 
 			} 
+			else if((Health != 0) && _gameover)
+			{
+
+			}
 		// (2) Also don't let the the model count diminish.
 					//(need to recheck propcount in case we just called seedCritters).
 			int modelcount = Biota.count<cCritter3Dcharacter>(); 
@@ -945,7 +972,9 @@ namespace ACFramework
                 doorcollision = false;
 				room1Cleared = true;
 			}
+
 			if (rmcnt ==2 && Score >= 5 && room1Cleared == true){
+
 				rmcnt=rmcnt+1;
                 setRoom2();
                 doorcollision = false;
