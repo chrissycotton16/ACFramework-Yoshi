@@ -468,14 +468,9 @@ namespace ACFramework
                 return;
             }
 
-            if(H) //win - we need to set winning parameters first
+            if(H) //win 
             {
                 ((cCritter3DPlayer)pcritter).setHealth(1000000);
-                //figure out how to kill all critters
-                
-                //((cCritter3DPlayer)pcritter).addScore(); //winning score
-                //((cCritter3Dcharacter)pcritter).delete_me();
-                //((cCritter3DBoss)pcritter).die();
             }
             if(J) //lose
             {
@@ -557,6 +552,12 @@ namespace ACFramework
                 }
                 _lastSpeed = pcritter.Speed;
             }
+
+            //moving the wall?
+            if(cGame.moveWall == true){
+                cGame.pMovingWall.moveWall(new cSpin(new cVector3(0.05f, 0.05f, 0.0f)));
+            }
+
         }
 
         public override string RuntimeClass
