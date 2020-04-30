@@ -86,6 +86,8 @@ namespace ACFramework
 			constants to & against. */
         //Helper method.
         protected string addOn;
+        public static bool moveWall = false;
+        public static cCritterMovingWall pMovingWall;
 
         protected int _index(cCritter pcritter) { return _pbiota._index(pcritter); }
 

@@ -552,6 +552,12 @@ namespace ACFramework
                 }
                 _lastSpeed = pcritter.Speed;
             }
+
+            //moving the wall?
+            if(cGame.moveWall == true){
+                cGame.pMovingWall.moveWall(new cSpin(new cVector3(0.05f, 0.05f, 0.0f)));
+            }
+
         }
 
         public override string RuntimeClass

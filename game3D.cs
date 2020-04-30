@@ -81,8 +81,7 @@ namespace ACFramework
                 Game.Border.Midz)) < 3.0f)
             {
                 warningGiven = true;
-                MessageBox.Show("You must have a score of 6 to go through this door and then a score of 20 to go to the next one");
-				
+                MessageBox.Show("You must have a score of 15 to go through this door. \nP.S. To get to the Boss room you need a score of 50.");
             }
  
         } 
@@ -395,7 +394,8 @@ namespace ACFramework
 			MaxSpeed = 30.0f;
             if (pownergame != null) //Just to be safe.
                 Sprite = new cSpriteQuake(Framework.models.selectRandomCritter());
-            
+            //moveTo(new cVector3(5.0f, 0.0f, -50.0f));
+
 			//draw critters to player to attack (tutorial 2)
 		
 			if(distanceTo(Player) < 1){
@@ -637,7 +637,6 @@ namespace ACFramework
         private float startNewRoom;
 		//public  cCritter3DHealer critterHealer;
 		public static bool gameOverBoss = false;
-
 		public cGame3D() 
 		{
 			doorcollision = false; 
@@ -833,7 +832,7 @@ namespace ACFramework
 			//---------------------------------------------------------------------------------------------------
             wentThrough = true;
             startNewRoom = Age;
-			
+
 		}
 		
 		public void setRoom2( )
@@ -855,7 +854,7 @@ namespace ACFramework
 			//_seedcount = 1;
 
 	        Player.setMoveBox( new cRealBox3( 80.0f, 15.0f, 50.0f ) );
-			
+
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
             float height = 3.0f * _border.YSize;
@@ -867,19 +866,22 @@ namespace ACFramework
             
 			//////////////////////////////////////////////////WALL NEEDS TO MOVE
 			
-			/*cCritterMovingWall pwall = new cCritterMovingWall(
-                           new cVector3(-_border.Midx, -ycenter, -zpos),
-                            new cVector3(-_border.Hix, -ycenter, -zpos),
-                            height, //thickness param for wall's dy which goes perpendicular to the 
-                            wallthickness, //height argument for this wall's dz  goes into the screen 
+			cCritterMovingWall pMovingWall = new cCritterMovingWall(
+                           new cVector3(_border.Midx, ycenter, zpos),
+                            new cVector3(_border.Hix, ycenter, zpos),
+                            wallthickness, //thickness param for wall's dy which goes perpendicular to the 
+                            height, //height argument for this wall's dz  goes into the screen 
                             this);
 			
             cSpriteTextureBox pspritebox =
-                new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Door, 16); //Sets all sides 
+                new cSpriteTextureBox(pMovingWall.Skeleton, BitmapRes.Door, 16); //Sets all sides 
+			pMovingWall.Sprite = pspritebox;
             /* We'll tile our sprites three times along the long sides, and on the
         short ends, we'll only tile them once, so we reset these two. */
           //  pwall.Sprite = pspritebox;
-
+			
+			//DNW 
+			//moveWall = true;
             wentThrough = true;
             startNewRoom = Age;
 			
@@ -944,21 +946,19 @@ namespace ACFramework
 	
 		public override void adjustGameParameters() 
 		{
+
 			bool room1Cleared = false;
 		// (1) End the game if the player is dead 
 			if ( (Health == 0) && !_gameover ) //Player's been killed and game's not over.
 			{ 
 				_gameover = true; 
 			//	Player.addScore( _scorecorrection ); // So user can reach _maxscore  
-                Framework.snd.play(Sound.Hallelujah);
+                Framework.snd.play(Sound.Bangbang);
                 return ; 
 			} 
 			else if(gameOverBoss){
+				Framework.snd.play(Sound.Hallelujah);
 				_gameover = true;
-			}
-			else if((Health != 0) && _gameover)
-			{
-
 			}
 		// (2) Also don't let the the model count diminish.
 					//(need to recheck propcount in case we just called seedCritters).
@@ -974,6 +974,8 @@ namespace ACFramework
             }
 			if (rmcnt ==1 && Score >= 15 && doorcollision==true){
 				rmcnt=rmcnt+1;
+				Player.moveTo(new cVector3(-5.0f, 3.0f, 32.0f));
+
                 setRoom1();
                 doorcollision = false;
 				room1Cleared = true;
@@ -988,19 +990,3 @@ namespace ACFramework
 		} 
 	}
 }
-
-		
-	
-	
-
-
-
-
-
-// MOVE WALL ADD SOUND FILES
-// move wall is the next objective
-// critter boss will be just like the healer class
-// so chrissy can take care of that 
-// move the score up as you continue into the game
-
-	//CHECK RESPAWN PROBLEM IN ROOM 2 AND 3
