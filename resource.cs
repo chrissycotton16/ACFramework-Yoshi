@@ -280,7 +280,9 @@ namespace ACFramework
         public static readonly int D = 17;
         public static readonly int Q = 18;
         public static readonly int W = 19;
-        public static readonly int E = 20;
+        public static readonly int E = 20;//NOT USED - VS DIDNT LIKE US GETTING RID OF IT
+        public static readonly int H = 21;
+        public static readonly int J = 22;
 
         public static Key[] key;
 
@@ -306,7 +308,9 @@ namespace ACFramework
                 Key.D,
                 Key.Q,
                 Key.W,
-                Key.E
+                Key.E,//NOT USED - VS DIDNT LIKE US GETTING RID OF IT
+                Key.H,
+                Key.J
             };
 
         }
