@@ -203,6 +203,7 @@ namespace ACFramework
 				{
 					if(!(pcritter is cCritter3DHealer) && !(pcritter is cCritter3DBoss))
 					{
+						((cCritter3Dcharacter)pcritter).alive = false;
 						Random rnd = new Random();
 						int randomDeath = rnd.Next (1, 3);
 						//pcritter.Radius = originalRadius;
