@@ -447,7 +447,7 @@ namespace ACFramework
             bool pagedown = Framework.Keydev[vk.PageDown];
             bool Q = Framework.Keydev[vk.Q];
             bool W = Framework.Keydev[vk.W];
-            bool E = Framework.Keydev[vk.E];
+            bool E = Framework.Keydev[vk.E];//NOT USED - VS DIDNT LIKE US GETTING RID OF IT
             bool H = Framework.Keydev[vk.H];
             bool J = Framework.Keydev[vk.J];
 
@@ -462,7 +462,7 @@ namespace ACFramework
                 ((cCritter3DPlayer)pcritter).Mode1 = 'W';
                 return;
             }
-            if(E)
+            if(E)//NOT USED - VS DIDNT LIKE US GETTING RID OF IT
             {
                 ((cCritter3DPlayer)pcritter).Mode1 = 'E';
                 return;
